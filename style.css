@@ -1,67 +1,65 @@
 /* Basic Reset & Body Style */
 body {
     margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    line-height: 1.6;
-    background-color: #f0f2f5; /* Lighter gray background */
-    color: #333;
+    font-family: 'Roboto', sans-serif; /* From Google Fonts example */
+    line-height: 1.7;
+    background-color: #f8f9fa;
+    color: #212529;
+    display: flex; /* Use flexbox */
+    flex-direction: column; /* Stack main and footer vertically */
+    min-height: 100vh; /* Ensure body takes full viewport height */
+}
+
+main {
+    flex-grow: 1; /* Allow main content to grow and push footer down */
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    width: 100%; /* Ensure main takes width for centering */
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 h1, h2, h3 {
-    color: #1c1e21; /* Darker text color */
+    font-family: 'Poppins', sans-serif; /* From Google Fonts example */
+    color: #1c1e21;
+    font-weight: 700;
+    margin-bottom: 1em;
 }
 
 a {
-    color: #007bff; /* Standard link blue */
-    text-decoration: none; /* No underline by default */
+    color: #007bff;
+    text-decoration: none;
 }
 
 a:hover {
-    text-decoration: underline; /* Underline on hover */
+    text-decoration: underline;
 }
 
-/* Allow main content to not touch edges, centered */
-main {
-    max-width: 1100px;
-    margin: 20px auto;
-    padding: 0 15px;
-}
-
-/* Hero Section Styling (Top section with large image) */
+/* Hero Section Styling */
 .hero {
     display: flex;
     align-items: center;
-    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), #e0e0e0; /* Light gray background, subtle gradient */
-    /* If you want the background image like screenshot 2, use this instead: */
-    /* background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('panther_image.png') no-repeat center center; */
-    /* background-size: cover; */
-    color: #333; /* Dark text on light bg */
-    padding: 40px 30px;
-    border-radius: 8px;
+    background: #ffffff; /* Simple white background */
+    color: #333;
+    padding: 50px 40px;
+    border-radius: 12px; /* Slightly more rounded */
     margin-bottom: 40px;
-    min-height: 400px; /* Minimum height */
-    position: relative; /* Needed for absolute positioning of image if used as background */
-    overflow: hidden; /* Hide parts of image that extend */
-    gap: 30px; /* Space between text and image container */
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    overflow: hidden;
+    gap: 40px;
+    flex-wrap: wrap;
 }
 
 .hero-content {
-    flex: 1; /* Take up available space */
-    min-width: 280px; /* Minimum width before wrapping */
-    z-index: 2; /* Ensure text is above background image if used */
-    /* Add backdrop filter for readability if using background image */
-    /* backdrop-filter: blur(2px) brightness(0.9); */
-    /* padding: 20px; */
-    /* background-color: rgba(255, 255, 255, 0.1); */
-    /* border-radius: 5px; */
+    flex: 1;
+    min-width: 300px;
+    z-index: 2;
 }
-
 
 .hero-content h1 {
     font-size: 2.8em;
     margin-bottom: 0.2em;
-    color: #111; /* Black or very dark grey */
+    color: #111;
 }
 
 .hero-content .subtitle {
@@ -70,127 +68,97 @@ main {
     color: #555;
 }
 
-
 .hero-buttons {
     margin-top: 25px;
 }
 
 .button {
     display: inline-block;
-    padding: 12px 30px;
-    margin: 5px 10px 5px 0;
-    border-radius: 25px; /* Pill shape */
+    padding: 12px 28px; /* Slightly adjusted padding */
+    margin: 8px 10px 8px 0; /* Added slight bottom margin */
+    border-radius: 25px;
     font-weight: bold;
     text-decoration: none;
     text-align: center;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 0.95em; /* Slightly smaller font */
 }
 
 .button:hover {
-    transform: translateY(-2px); /* Slight lift effect */
+    transform: translateY(-2px);
     text-decoration: none;
 }
 
 .waitlist-button {
-    background-color: #ffffff; /* White background */
-    color: #333333; /* Dark text */
-    border: 1px solid #ccc; /* Light border */
+    background-color: #D4AF37; /* Gold accent (Change if needed) */
+    color: #212529;
+    border: none;
 }
 
 .waitlist-button:hover {
-    background-color: #f5f5f5; /* Slightly darker white */
+    background-color: #c8a030;
 }
 
 .gitbook-button {
-    background-color: #555555; /* Dark grey */
-    color: white;
-    border: 1px solid #444;
+    background-color: transparent;
+    color: #333;
+    border: 2px solid #555;
 }
 
 .gitbook-button:hover {
-    background-color: #444444; /* Slightly darker grey */
+    background-color: #f8f8f8;
+     border-color: #333;
 }
 
+/* Styles for NEW Discord and X buttons */
+.discord-button {
+    background-color: #5865F2; /* Discord Purple */
+    color: white;
+    border: none;
+}
+
+.discord-button:hover {
+    background-color: #4a54cf; /* Darker Discord Purple */
+}
+
+.x-button {
+    background-color: #000000; /* Black for X */
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+.x-button:hover {
+    background-color: #333333; /* Dark Grey for X hover */
+}
+
+
 .hero-image-container {
-     flex: 1.5; /* Give image container more space if needed */
+     flex: 1.2; /* Adjust image container space */
      text-align: center;
      min-width: 300px;
-     z-index: 1;
+     align-self: center; /* Center image vertically if needed */
 }
 
 .hero-image {
     max-width: 100%;
     height: auto;
-    max-height: 450px; /* Limit image height */
-    object-fit: contain; /* Make sure image scales nicely */
+    max-height: 400px; /* Adjusted max height */
+    object-fit: contain;
 }
-
-
-/* About Section Styling (Lower section) */
-.about {
-    background-color: #ffffff; /* White background */
-    padding: 30px;
-    border-radius: 8px;
-    margin-bottom: 40px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.about h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 1.8em;
-}
-
-.about-content {
-    display: flex;
-    align-items: center;
-    gap: 30px; /* Space between image and text */
-    flex-wrap: wrap; /* Allow wrapping */
-}
-
-.about-image {
-    flex: 1; /* Adjust ratio as needed */
-    min-width: 250px;
-    text-align: center;
-}
-
-.about-image img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px; /* Optional rounded corners */
-}
-
-.about-text {
-    flex: 1.5; /* Give text more space */
-    min-width: 300px;
-}
-
-.about-text h3 {
-    margin-top: 0;
-    font-size: 1.5em;
-}
-
-.info-links {
-    margin-top: 20px;
-}
-
-.info-links a {
-    display: block; /* Links on separate lines */
-    margin-bottom: 8px;
-    word-break: break-all; /* Prevent long links from overflowing */
-}
-
 
 /* Footer */
 footer {
     text-align: center;
     padding: 25px;
-    margin-top: 50px;
-    background-color: #333; /* Dark footer */
+    margin-top: auto; /* Pushes footer to bottom if content is short */
+    background-color: #333;
     color: #ccc;
     font-size: 0.9em;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Basic Responsive adjustments */
@@ -201,32 +169,31 @@ footer {
         padding: 30px 20px;
     }
      .hero-content {
-        margin-bottom: 20px; /* Add space below text when stacked */
+        margin-bottom: 30px;
+        order: 2; /* Text below image */
      }
 
     .hero-image-container {
-        order: -1; /* Move image above text on mobile if desired */
+        order: 1; /* Image above text */
          margin-bottom: 20px;
+         max-width: 80%; /* Control image size on mobile */
     }
 
     .hero-buttons {
         text-align: center;
     }
 
-    .about-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    .about-image {
-        margin-bottom: 20px;
-    }
-    .about-text {
-         text-align: left; /* Keep text left-aligned even if container is centered */
-    }
-     .info-links {
-         text-align: center;
-     }
-
     h1 { font-size: 2.2em; }
-    h2 { font-size: 1.6em; }
+}
+
+@media (max-width: 480px) {
+    .button {
+        display: block; /* Stack buttons vertically */
+        width: 80%; /* Make buttons wide */
+        margin: 10px auto; /* Center buttons with spacing */
+        padding: 14px 20px; /* Adjust padding */
+    }
+     .hero-content h1 {
+        font-size: 2em;
+    }
 }
