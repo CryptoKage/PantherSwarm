@@ -4,18 +4,23 @@
     --font-secondary: 'Roboto', sans-serif;
     --color-text: #212529; /* Dark Charcoal */
     --color-text-muted: #6c757d; /* Medium Grey */
+    --color-text-light: #f1f3f5; /* Light text for dark BG */
+    --color-text-white: #ffffff; /* Pure white */
     --color-background: #f8f9fa; /* Very Light Grey */
     --color-card-bg: #ffffff; /* White */
     --color-border: #dee2e6; /* Light Grey Border */
+    --color-border-light: rgba(255, 255, 255, 0.5); /* Light border for dark BG */
     --color-accent-gold: #D4AF37;
     --color-accent-gold-darker: #c8a030;
-    --color-gold-gradient-end: #b8860b; /* For h1 gradient */
     --color-discord-blue: #5865F2;
     --color-discord-blue-darker: #4a54cf;
     --color-x-black: #000000;
     --color-x-black-darker: #222222;
+    --color-overlay-dark: rgba(10, 10, 15, 0.70); /* Dark overlay for BG image */
+    --color-overlay-darker: rgba(10, 10, 15, 0.80); /* Darker overlay */
     --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.06);
-    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.12); /* Added for button hover */
+    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.12);
+    --text-shadow-darkbg: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Text shadow for readability */
     --border-radius-medium: 10px;
     --border-radius-pill: 50px;
 }
@@ -41,16 +46,16 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac */
-    -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
-    overflow-x: hidden; /* Prevent horizontal scroll from animations */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
 }
 
 main {
     flex-grow: 1;
-    max-width: 1150px; /* Slightly wider max-width */
-    width: 90%; /* Use percentage width */
-    margin: 4rem auto; /* Generous vertical margin */
+    max-width: 1150px;
+    width: 90%;
+    margin: 4rem auto;
     padding: 0 1rem;
 }
 
@@ -58,87 +63,90 @@ main {
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-primary);
     font-weight: 700;
-    color: var(--color-text);
     line-height: 1.3;
     margin-bottom: 1rem;
 }
 
 h1 {
-    font-size: clamp(2.5rem, 5vw, 3.2rem); /* Responsive font size */
+    font-size: clamp(2.5rem, 5vw, 3.2rem);
     letter-spacing: -0.5px;
 }
 
 p {
     margin-bottom: 1.5rem;
-    max-width: 65ch; /* Limit paragraph width for readability */
+    max-width: 65ch; /* Limit paragraph width */
 }
 
 .subtitle {
     font-family: var(--font-primary);
     font-size: 1.15rem;
     font-weight: 400;
-    color: var(--color-text-muted);
     margin-bottom: 2rem;
 }
 
 a {
-    color: var(--color-text); /* Inherit text color */
+    color: var(--color-text);
     text-decoration: none;
     transition: color 0.2s ease;
 }
-
 a:hover {
-    color: var(--color-accent-gold); /* Highlight links on hover */
-    text-decoration: none; /* Keep no underline unless specified */
+    color: var(--color-accent-gold);
+    text-decoration: none;
 }
 
-/* === Hero Section === */
+/* === Hero Section (with Background Image) === */
 .hero {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 3rem; /* Spacing between text and image */
-    background-color: var(--color-card-bg);
-    padding: 4rem 3.5rem; /* Generous padding */
+    text-align: center;
+    min-height: 75vh; /* Increased height */
+    padding: 5rem 2rem; /* More padding */
     border-radius: var(--border-radius-medium);
     box-shadow: var(--shadow-soft);
-    overflow: hidden; /* Keep hidden to contain elements */
-    flex-wrap: wrap;
-    position: relative; /* Needed if we add overlays later */
+    overflow: hidden;
+    position: relative;
+    z-index: 0;
+
+    /* Background Image Settings */
+    background-image:
+        linear-gradient(var(--color-overlay-dark), var(--color-overlay-darker)),
+        url('panther2.png'); /* Ensure filename is correct */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    /* background-attachment: fixed; */ /* Uncomment for parallax effect */
 }
 
 .hero-content {
-    flex: 1 1 55%; /* Allow text content to take more space initially */
-    min-width: 300px;
-    z-index: 2; /* Ensure content is above potential background elements */
+    flex: 0 0 auto; /* Don't grow/shrink, take natural size */
+    width: 100%; /* Ensure it spans width for centering */
+    max-width: 800px; /* Limit content width */
+    z-index: 2; /* Above background/overlay */
 }
 
-.hero-image-container {
-    flex: 1 1 40%; /* Adjust image container space */
-    min-width: 280px;
-    text-align: center;
-    align-self: center;
-    z-index: 1; /* Below content */
+/* Text Colors within Hero for Dark Background */
+.hero .hero-content h1,
+.hero .hero-content .subtitle,
+.hero .hero-content p {
+    color: var(--color-text-light);
+    text-shadow: var(--text-shadow-darkbg);
 }
 
-.hero-image {
-    max-width: 100%;
-    height: auto;
-    max-height: 400px;
-    object-fit: contain;
-    display: block; /* Remove extra space below image */
-    margin: 0 auto; /* Ensure centered if container is wider */
-    /* Animation Added */
-    transition: transform 0.3s ease-in-out, filter 0.3s ease;
-    /* Optional pulse animation (uncomment to enable) */
-    /* animation: pulseGlow 5s infinite ease-in-out; */
-    /* animation-delay: 1s; */
+/* Specific Hero Heading Style (No Gradient) */
+.hero .hero-content h1 {
+    color: var(--color-text-white); /* Brighter white for heading */
+    background: none; /* Ensure no gradient */
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: unset;
 }
 
-.hero-image:hover {
-    transform: scale(1.04); /* Slightly larger scale on hover */
-    filter: brightness(108%); /* Make slightly brighter on hover */
+/* Adjust subtitle color slightly */
+.hero .hero-content .subtitle {
+    color: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
 }
-
 
 /* === Buttons === */
 .hero-buttons {
@@ -147,34 +155,31 @@ a:hover {
 
 .button {
     display: inline-block;
-    padding: 0.85rem 2rem; /* Vertical/Horizontal padding */
+    padding: 0.85rem 2rem;
     margin: 0.5rem 0.75rem 0.5rem 0;
     border-radius: var(--border-radius-pill);
     font-family: var(--font-primary);
     font-weight: 600;
     font-size: 0.9rem;
-    text-transform: uppercase; /* Formal look */
+    text-transform: uppercase;
     letter-spacing: 0.6px;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    border: 2px solid transparent; /* Border placeholder */
+    border: 2px solid transparent;
     transition: all 0.25s ease-in-out;
-    line-height: 1.5; /* Ensure text vertical centering */
+    line-height: 1.5;
 }
-
 .button:hover,
 .button:focus {
-    /* Updated hover with scale */
     transform: translateY(-3px) scale(1.02);
     box-shadow: var(--shadow-hover);
-    text-decoration: none; /* Ensure no underline */
-    outline: none; /* Remove focus outline if visually distinct */
+    text-decoration: none;
+    outline: none;
 }
-
 .button:active {
-    transform: translateY(-1px); /* Slight press effect */
-     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* Specific Button Styles */
@@ -189,56 +194,65 @@ a:hover {
     color: var(--color-text);
 }
 
+/* GitBook Button adjusted for Hero */
+.hero .gitbook-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-white);
+    border-color: var(--color-border-light);
+}
+.hero .gitbook-button:hover, .hero .gitbook-button:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-white);
+    border-color: var(--color-text-white);
+}
+/* Default GitBook Button (if used outside hero) */
 .gitbook-button {
     background-color: transparent;
     color: var(--color-text-muted);
     border-color: var(--color-border);
 }
 .gitbook-button:hover, .gitbook-button:focus {
-    background-color: var(--color-background); /* Light fill on hover */
+    background-color: var(--color-background);
     color: var(--color-text);
     border-color: var(--color-text-muted);
 }
 
 .discord-button {
     background-color: var(--color-discord-blue);
-    color: #ffffff;
+    color: var(--color-text-white);
     border-color: var(--color-discord-blue);
 }
 .discord-button:hover, .discord-button:focus {
     background-color: var(--color-discord-blue-darker);
     border-color: var(--color-discord-blue-darker);
-    color: #ffffff;
+    color: var(--color-text-white);
 }
 
 .x-button {
     background-color: var(--color-x-black);
-    color: #ffffff;
+    color: var(--color-text-white);
     border-color: var(--color-x-black);
 }
 .x-button:hover, .x-button:focus {
     background-color: var(--color-x-black-darker);
     border-color: var(--color-x-black-darker);
-    color: #ffffff;
+    color: var(--color-text-white);
 }
-
 
 /* === Footer === */
 footer {
     text-align: center;
     padding: 2rem 1rem;
-    margin-top: auto; /* Push to bottom */
-    background-color: var(--color-text); /* Use dark text color as bg */
-    color: rgba(255, 255, 255, 0.6); /* Muted white text */
+    margin-top: auto;
+    background-color: var(--color-text);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 0.85rem;
     width: 100%;
 }
 
 /* === Animations === */
-
 /* Entrance Animations Application */
-.hero-content > *,
-.hero-image-container {
+.hero-content > * { /* Target direct children for stagger */
   animation: fadeInSlideUp 0.8s ease-out forwards;
   opacity: 0; /* Start hidden */
 }
@@ -246,105 +260,45 @@ footer {
 /* Stagger the animations */
 .hero-content h1 { animation-delay: 0.1s; }
 .hero-content .subtitle { animation-delay: 0.2s; }
-.hero-content > p:not(.subtitle) { animation-delay: 0.3s; } /* Select p that isn't subtitle*/
+.hero-content > p:not(.subtitle) { animation-delay: 0.3s; }
 .hero-buttons { animation-delay: 0.4s; }
-.hero-image-container { animation-delay: 0.3s; } /* Image fades in with paragraph */
+/* No delay needed for hero-image-container as it's gone */
 
-/* Gradient Heading */
-.hero-content h1 {
-    background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-gold-darker), var(--color-gold-gradient-end));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent; /* Fallback */
-    /* Retain animation delay */
-    animation-delay: 0.1s;
-}
-
-
-/* === Animation Keyframes (Add at the end) === */
+/* === Animation Keyframes === */
 @keyframes fadeInSlideUp {
   from {
     opacity: 0;
-    transform: translateY(25px); /* Slightly more noticeable slide */
+    transform: translateY(25px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
-@keyframes subtleGrow {
-   0% { transform: scale(1); }
-   50% { transform: scale(1.03); }
-   100% { transform: scale(1); }
-}
-
-@keyframes pulseGlow {
-  0% { transform: scale(1); filter: brightness(100%); }
-  50% { transform: scale(1.015); filter: brightness(105%); }
-  100% { transform: scale(1); filter: brightness(100%); }
-}
-
+/* (Removed pulseGlow and subtleGrow keyframes as image isn't interactable) */
 
 /* === Responsive Adjustments === */
 @media (max-width: 992px) {
-    .hero {
-        padding: 3rem 2.5rem;
-        gap: 2rem;
-    }
-    h1 {
-        font-size: clamp(2.2rem, 4.5vw, 2.8rem);
-    }
+    h1 { font-size: clamp(2.2rem, 4.5vw, 2.8rem); }
 }
 
 @media (max-width: 768px) {
-    main {
-        margin: 2.5rem auto;
-        width: 92%;
-    }
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 2.5rem 1.5rem;
-    }
-    .hero-content {
-        order: 2; /* Text below image */
-        flex-basis: auto; /* Reset flex basis */
-        width: 100%;
-    }
-    .hero-image-container {
-        order: 1; /* Image above text */
-        flex-basis: auto;
-        width: 80%; /* Limit image width */
-        max-width: 350px; /* Absolute max */
-        margin-bottom: 1.5rem;
-    }
-    p, .subtitle {
-        margin-left: auto; /* Center limited-width paragraphs */
-        margin-right: auto;
-    }
-    .hero-buttons {
-        text-align: center;
-    }
+    main { margin: 2.5rem auto; width: 92%; }
+    .hero { padding: 4rem 1.5rem; min-height: 65vh; }
+    .hero-content { max-width: 90%; } /* Allow slightly wider content */
 }
 
 @media (max-width: 576px) {
-    html {
-        font-size: 15px; /* Slightly smaller base on small screens */
-    }
-    main {
-         margin: 2rem auto;
-         width: 95%;
-    }
-    .hero {
-        padding: 2rem 1rem;
-    }
+    html { font-size: 15px; }
+    main { margin: 2rem auto; width: 95%; }
+    .hero { padding: 3rem 1rem; min-height: 60vh; }
     .button {
-        display: block; /* Stack buttons */
+        display: block;
         width: 90%;
-        max-width: 320px; /* Limit button width */
-        margin: 0.8rem auto; /* Center stacked buttons */
+        max-width: 320px;
+        margin: 0.8rem auto;
         padding: 0.9rem 1.5rem;
     }
+    h1 { font-size: clamp(2rem, 6vw, 2.5rem); } /* Adjust mobile heading size */
+    .subtitle { font-size: 1rem; }
 }
