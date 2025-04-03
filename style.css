@@ -1,199 +1,281 @@
-/* Basic Reset & Body Style */
-body {
+/* === Base Styles & Variables === */
+:root {
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Roboto', sans-serif;
+    --color-text: #212529; /* Dark Charcoal */
+    --color-text-muted: #6c757d; /* Medium Grey */
+    --color-background: #f8f9fa; /* Very Light Grey */
+    --color-card-bg: #ffffff; /* White */
+    --color-border: #dee2e6; /* Light Grey Border */
+    --color-accent-gold: #D4AF37;
+    --color-accent-gold-darker: #c8a030;
+    --color-discord-blue: #5865F2;
+    --color-discord-blue-darker: #4a54cf;
+    --color-x-black: #000000;
+    --color-x-black-darker: #222222;
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --border-radius-medium: 10px;
+    --border-radius-pill: 50px;
+}
+
+/* Basic Reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
     margin: 0;
-    font-family: 'Roboto', sans-serif; /* From Google Fonts example */
+    padding: 0;
+}
+
+html {
+    font-size: 16px; /* Base font size */
+}
+
+body {
+    font-family: var(--font-secondary);
     line-height: 1.7;
-    background-color: #f8f9fa;
-    color: #212529;
-    display: flex; /* Use flexbox */
-    flex-direction: column; /* Stack main and footer vertically */
-    min-height: 100vh; /* Ensure body takes full viewport height */
+    background-color: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac */
+    -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
 }
 
 main {
-    flex-grow: 1; /* Allow main content to grow and push footer down */
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 0 20px;
-    width: 100%; /* Ensure main takes width for centering */
-    box-sizing: border-box; /* Include padding in width calculation */
+    flex-grow: 1;
+    max-width: 1150px; /* Slightly wider max-width */
+    width: 90%; /* Use percentage width */
+    margin: 4rem auto; /* Generous vertical margin */
+    padding: 0 1rem;
 }
 
-h1, h2, h3 {
-    font-family: 'Poppins', sans-serif; /* From Google Fonts example */
-    color: #1c1e21;
+/* === Typography === */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
     font-weight: 700;
-    margin-bottom: 1em;
+    color: var(--color-text);
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: clamp(2.5rem, 5vw, 3.2rem); /* Responsive font size */
+    letter-spacing: -0.5px;
+}
+
+p {
+    margin-bottom: 1.5rem;
+    max-width: 65ch; /* Limit paragraph width for readability */
+}
+
+.subtitle {
+    font-family: var(--font-primary);
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
 }
 
 a {
-    color: #007bff;
+    color: var(--color-text); /* Inherit text color */
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: var(--color-accent-gold); /* Highlight links on hover */
+    text-decoration: none; /* Keep no underline unless specified */
 }
 
-/* Hero Section Styling */
+/* === Hero Section === */
 .hero {
     display: flex;
     align-items: center;
-    background: #ffffff; /* Simple white background */
-    color: #333;
-    padding: 50px 40px;
-    border-radius: 12px; /* Slightly more rounded */
-    margin-bottom: 40px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    gap: 3rem; /* Spacing between text and image */
+    background-color: var(--color-card-bg);
+    padding: 4rem 3.5rem; /* Generous padding */
+    border-radius: var(--border-radius-medium);
+    box-shadow: var(--shadow-soft);
     overflow: hidden;
-    gap: 40px;
     flex-wrap: wrap;
 }
 
 .hero-content {
-    flex: 1;
+    flex: 1 1 55%; /* Allow text content to take more space initially */
     min-width: 300px;
     z-index: 2;
 }
 
-.hero-content h1 {
-    font-size: 2.8em;
-    margin-bottom: 0.2em;
-    color: #111;
-}
-
-.hero-content .subtitle {
-    font-size: 1.2em;
-    margin-bottom: 1.5em;
-    color: #555;
-}
-
-.hero-buttons {
-    margin-top: 25px;
-}
-
-.button {
-    display: inline-block;
-    padding: 12px 28px; /* Slightly adjusted padding */
-    margin: 8px 10px 8px 0; /* Added slight bottom margin */
-    border-radius: 25px;
-    font-weight: bold;
-    text-decoration: none;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-size: 0.95em; /* Slightly smaller font */
-}
-
-.button:hover {
-    transform: translateY(-2px);
-    text-decoration: none;
-}
-
-.waitlist-button {
-    background-color: #D4AF37; /* Gold accent (Change if needed) */
-    color: #212529;
-    border: none;
-}
-
-.waitlist-button:hover {
-    background-color: #c8a030;
-}
-
-.gitbook-button {
-    background-color: transparent;
-    color: #333;
-    border: 2px solid #555;
-}
-
-.gitbook-button:hover {
-    background-color: #f8f8f8;
-     border-color: #333;
-}
-
-/* Styles for NEW Discord and X buttons */
-.discord-button {
-    background-color: #5865F2; /* Discord Purple */
-    color: white;
-    border: none;
-}
-
-.discord-button:hover {
-    background-color: #4a54cf; /* Darker Discord Purple */
-}
-
-.x-button {
-    background-color: #000000; /* Black for X */
-    color: white;
-    border: none;
-    font-weight: bold;
-}
-
-.x-button:hover {
-    background-color: #333333; /* Dark Grey for X hover */
-}
-
-
 .hero-image-container {
-     flex: 1.2; /* Adjust image container space */
-     text-align: center;
-     min-width: 300px;
-     align-self: center; /* Center image vertically if needed */
+    flex: 1 1 40%; /* Adjust image container space */
+    min-width: 280px;
+    text-align: center;
+    align-self: center;
+    z-index: 1;
 }
 
 .hero-image {
     max-width: 100%;
     height: auto;
-    max-height: 400px; /* Adjusted max height */
+    max-height: 400px;
     object-fit: contain;
+    display: block; /* Remove extra space below image */
+    margin: 0 auto; /* Ensure centered if container is wider */
 }
 
-/* Footer */
+/* === Buttons === */
+.hero-buttons {
+    margin-top: 2.5rem;
+}
+
+.button {
+    display: inline-block;
+    padding: 0.85rem 2rem; /* Vertical/Horizontal padding */
+    margin: 0.5rem 0.75rem 0.5rem 0;
+    border-radius: var(--border-radius-pill);
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase; /* Formal look */
+    letter-spacing: 0.6px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid transparent; /* Border placeholder */
+    transition: all 0.25s ease-in-out;
+    line-height: 1.5; /* Ensure text vertical centering */
+}
+
+.button:hover,
+.button:focus {
+    transform: translateY(-3px); /* Lift effect */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow increase */
+    text-decoration: none; /* Ensure no underline */
+    outline: none; /* Remove focus outline if visually distinct */
+}
+
+.button:active {
+    transform: translateY(-1px); /* Slight press effect */
+     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Specific Button Styles */
+.waitlist-button {
+    background-color: var(--color-accent-gold);
+    color: var(--color-text);
+    border-color: var(--color-accent-gold);
+}
+.waitlist-button:hover, .waitlist-button:focus {
+    background-color: var(--color-accent-gold-darker);
+    border-color: var(--color-accent-gold-darker);
+    color: var(--color-text);
+}
+
+.gitbook-button {
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border-color: var(--color-border);
+}
+.gitbook-button:hover, .gitbook-button:focus {
+    background-color: var(--color-background); /* Light fill on hover */
+    color: var(--color-text);
+    border-color: var(--color-text-muted);
+}
+
+.discord-button {
+    background-color: var(--color-discord-blue);
+    color: #ffffff;
+    border-color: var(--color-discord-blue);
+}
+.discord-button:hover, .discord-button:focus {
+    background-color: var(--color-discord-blue-darker);
+    border-color: var(--color-discord-blue-darker);
+    color: #ffffff;
+}
+
+.x-button {
+    background-color: var(--color-x-black);
+    color: #ffffff;
+    border-color: var(--color-x-black);
+}
+.x-button:hover, .x-button:focus {
+    background-color: var(--color-x-black-darker);
+    border-color: var(--color-x-black-darker);
+    color: #ffffff;
+}
+
+
+/* === Footer === */
 footer {
     text-align: center;
-    padding: 25px;
-    margin-top: auto; /* Pushes footer to bottom if content is short */
-    background-color: #333;
-    color: #ccc;
-    font-size: 0.9em;
+    padding: 2rem 1rem;
+    margin-top: auto; /* Push to bottom */
+    background-color: var(--color-text); /* Use dark text color as bg */
+    color: rgba(255, 255, 255, 0.6); /* Muted white text */
+    font-size: 0.85rem;
     width: 100%;
-    box-sizing: border-box;
 }
 
-/* Basic Responsive adjustments */
+/* === Responsive Adjustments === */
+@media (max-width: 992px) {
+    .hero {
+        padding: 3rem 2.5rem;
+        gap: 2rem;
+    }
+    h1 {
+        font-size: clamp(2.2rem, 4.5vw, 2.8rem);
+    }
+}
+
 @media (max-width: 768px) {
+    main {
+        margin: 2.5rem auto;
+        width: 92%;
+    }
     .hero {
         flex-direction: column;
         text-align: center;
-        padding: 30px 20px;
+        padding: 2.5rem 1.5rem;
     }
-     .hero-content {
-        margin-bottom: 30px;
+    .hero-content {
         order: 2; /* Text below image */
-     }
-
+        flex-basis: auto; /* Reset flex basis */
+        width: 100%;
+    }
     .hero-image-container {
         order: 1; /* Image above text */
-         margin-bottom: 20px;
-         max-width: 80%; /* Control image size on mobile */
+        flex-basis: auto;
+        width: 80%; /* Limit image width */
+        max-width: 350px; /* Absolute max */
+        margin-bottom: 1.5rem;
     }
-
+    p, .subtitle {
+        margin-left: auto; /* Center limited-width paragraphs */
+        margin-right: auto;
+    }
     .hero-buttons {
         text-align: center;
     }
-
-    h1 { font-size: 2.2em; }
 }
 
-@media (max-width: 480px) {
-    .button {
-        display: block; /* Stack buttons vertically */
-        width: 80%; /* Make buttons wide */
-        margin: 10px auto; /* Center buttons with spacing */
-        padding: 14px 20px; /* Adjust padding */
+@media (max-width: 576px) {
+    html {
+        font-size: 15px; /* Slightly smaller base on small screens */
     }
-     .hero-content h1 {
-        font-size: 2em;
+    main {
+         margin: 2rem auto;
+         width: 95%;
+    }
+    .hero {
+        padding: 2rem 1rem;
+    }
+    .button {
+        display: block; /* Stack buttons */
+        width: 90%;
+        max-width: 320px; /* Limit button width */
+        margin: 0.8rem auto; /* Center stacked buttons */
+        padding: 0.9rem 1.5rem;
     }
 }
