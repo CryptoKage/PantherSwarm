@@ -9,11 +9,13 @@
     --color-border: #dee2e6; /* Light Grey Border */
     --color-accent-gold: #D4AF37;
     --color-accent-gold-darker: #c8a030;
+    --color-gold-gradient-end: #b8860b; /* For h1 gradient */
     --color-discord-blue: #5865F2;
     --color-discord-blue-darker: #4a54cf;
     --color-x-black: #000000;
     --color-x-black-darker: #222222;
     --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.12); /* Added for button hover */
     --border-radius-medium: 10px;
     --border-radius-pill: 50px;
 }
@@ -41,6 +43,7 @@ body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac */
     -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
+    overflow-x: hidden; /* Prevent horizontal scroll from animations */
 }
 
 main {
@@ -98,14 +101,15 @@ a:hover {
     padding: 4rem 3.5rem; /* Generous padding */
     border-radius: var(--border-radius-medium);
     box-shadow: var(--shadow-soft);
-    overflow: hidden;
+    overflow: hidden; /* Keep hidden to contain elements */
     flex-wrap: wrap;
+    position: relative; /* Needed if we add overlays later */
 }
 
 .hero-content {
     flex: 1 1 55%; /* Allow text content to take more space initially */
     min-width: 300px;
-    z-index: 2;
+    z-index: 2; /* Ensure content is above potential background elements */
 }
 
 .hero-image-container {
@@ -113,7 +117,7 @@ a:hover {
     min-width: 280px;
     text-align: center;
     align-self: center;
-    z-index: 1;
+    z-index: 1; /* Below content */
 }
 
 .hero-image {
@@ -123,7 +127,18 @@ a:hover {
     object-fit: contain;
     display: block; /* Remove extra space below image */
     margin: 0 auto; /* Ensure centered if container is wider */
+    /* Animation Added */
+    transition: transform 0.3s ease-in-out, filter 0.3s ease;
+    /* Optional pulse animation (uncomment to enable) */
+    /* animation: pulseGlow 5s infinite ease-in-out; */
+    /* animation-delay: 1s; */
 }
+
+.hero-image:hover {
+    transform: scale(1.04); /* Slightly larger scale on hover */
+    filter: brightness(108%); /* Make slightly brighter on hover */
+}
+
 
 /* === Buttons === */
 .hero-buttons {
@@ -150,8 +165,9 @@ a:hover {
 
 .button:hover,
 .button:focus {
-    transform: translateY(-3px); /* Lift effect */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow increase */
+    /* Updated hover with scale */
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: var(--shadow-hover);
     text-decoration: none; /* Ensure no underline */
     outline: none; /* Remove focus outline if visually distinct */
 }
@@ -217,6 +233,59 @@ footer {
     font-size: 0.85rem;
     width: 100%;
 }
+
+/* === Animations === */
+
+/* Entrance Animations Application */
+.hero-content > *,
+.hero-image-container {
+  animation: fadeInSlideUp 0.8s ease-out forwards;
+  opacity: 0; /* Start hidden */
+}
+
+/* Stagger the animations */
+.hero-content h1 { animation-delay: 0.1s; }
+.hero-content .subtitle { animation-delay: 0.2s; }
+.hero-content > p:not(.subtitle) { animation-delay: 0.3s; } /* Select p that isn't subtitle*/
+.hero-buttons { animation-delay: 0.4s; }
+.hero-image-container { animation-delay: 0.3s; } /* Image fades in with paragraph */
+
+/* Gradient Heading */
+.hero-content h1 {
+    background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-gold-darker), var(--color-gold-gradient-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* Fallback */
+    /* Retain animation delay */
+    animation-delay: 0.1s;
+}
+
+
+/* === Animation Keyframes (Add at the end) === */
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px); /* Slightly more noticeable slide */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtleGrow {
+   0% { transform: scale(1); }
+   50% { transform: scale(1.03); }
+   100% { transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(1); filter: brightness(100%); }
+  50% { transform: scale(1.015); filter: brightness(105%); }
+  100% { transform: scale(1); filter: brightness(100%); }
+}
+
 
 /* === Responsive Adjustments === */
 @media (max-width: 992px) {
