@@ -1,0 +1,124 @@
+/* Basic Reset & Body Style */
+body {
+    margin: 0;
+    font-family: sans-serif; /* Choose a better font later */
+    line-height: 1.6;
+    background-color: #f4f4f4; /* Light gray background */
+    color: #333;
+}
+
+h1, h2 {
+    color: #111;
+}
+
+/* Allow main content to not touch edges */
+main {
+    max-width: 1200px; /* Max width of content */
+    margin: 20px auto; /* Center content horizontally, add space top/bottom */
+    padding: 0 20px; /* Add padding on the sides */
+}
+
+/* Hero Section Styling (Image beside Text) */
+.hero {
+    display: flex; /* Use flexbox for side-by-side layout */
+    align-items: center; /* Vertically align items in the middle */
+    gap: 40px; /* Space between text and image */
+    padding: 40px 0; /* Padding top/bottom */
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    background-color: #fff; /* White background for the hero */
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+.hero-content {
+    flex: 1; /* Allow text content to take available space */
+    min-width: 300px; /* Minimum width before wrapping */
+}
+
+.hero-image {
+    flex: 1; /* Allow image container to take available space */
+    text-align: center; /* Center image within its container */
+    min-width: 300px;
+}
+
+.hero-image img {
+    max-width: 100%; /* Make image responsive */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Optional rounded corners for image */
+}
+
+/* Link & Button Styling */
+.links {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.link-button, .button {
+    display: inline-block; /* Allow setting padding/margin */
+    padding: 12px 25px;
+    margin: 5px;
+    text-decoration: none; /* Remove underline from links */
+    border-radius: 25px; /* Rounded corners */
+    font-weight: bold;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.link-button {
+   background-color: #eee; /* Lighter background for secondary links */
+   color: #333;
+   border: 1px solid #ccc;
+}
+.link-button:hover {
+   background-color: #ddd;
+}
+
+
+.waitlist-button {
+    background-color: #4CAF50; /* Green background like screenshot */
+    color: white;
+    border: none;
+}
+
+.waitlist-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+.waitlist-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee; /* Separator line */
+}
+
+
+/* About Section */
+.about {
+  padding: 30px;
+  background-color: #fff; /* White background */
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center; /* Center title */
+}
+
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background-color: #333; /* Dark footer */
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+/* Basic Responsive adjustments */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column; /* Stack text and image vertically on smaller screens */
+    }
+    .hero-content, .hero-image {
+         text-align: center; /* Center text on small screens */
+    }
+}
