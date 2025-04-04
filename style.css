@@ -2,47 +2,39 @@
 :root {
     --font-primary: 'Inter', sans-serif;
     --font-secondary: 'Roboto', sans-serif;
-    --color-text: #212529; /* Dark Charcoal */
-    --color-text-muted: #6c757d; /* Medium Grey */
-    --color-text-light: #f1f3f5; /* Light text for dark BG */
-    --color-text-white: #ffffff; /* Pure white */
-    --color-background: #f8f9fa; /* Very Light Grey */
-    --color-card-bg: #ffffff; /* White */
-    --color-border: #dee2e6; /* Light Grey Border */
-    --color-border-light: rgba(255, 255, 255, 0.5); /* Light border for dark BG */
+    /* Dark Theme Colors */
+    --color-background: #121212; /* Very Dark Grey/Off-black */
+    --color-background-secondary: #1a1a1a; /* Slightly lighter dark for footer */
+    --color-text: #e1e1e1; /* Light Grey base text */
+    --color-text-muted: #a0a0a0; /* Medium light grey */
+    --color-text-white: #ffffff; /* Pure white for headings/accents */
+    --color-border-light: rgba(255, 255, 255, 0.15); /* Subtle light border */
+    /* Accent Colors */
     --color-accent-gold: #D4AF37;
     --color-accent-gold-darker: #c8a030;
     --color-discord-blue: #5865F2;
     --color-discord-blue-darker: #4a54cf;
-    --color-x-black: #000000;
+    --color-x-black: #000000; /* Keep X button black */
     --color-x-black-darker: #222222;
-    --color-overlay-dark: rgba(10, 10, 15, 0.70); /* Dark overlay for BG image */
-    --color-overlay-darker: rgba(10, 10, 15, 0.80); /* Darker overlay */
-    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.06);
-    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.12);
-    --text-shadow-darkbg: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Text shadow for readability */
-    --border-radius-medium: 10px;
+    /* Overlay for BG Image */
+    --color-overlay-dark: rgba(18, 18, 18, 0.75); /* Match dark bg */
+    --color-overlay-darker: rgba(18, 18, 18, 0.85);
+    /* Other Variables */
+    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.2); /* Adjusted shadow for dark */
+    --text-shadow-darkbg: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    --border-radius-medium: 8px; /* Slightly less rounded */
     --border-radius-pill: 50px;
 }
 
 /* Basic Reset */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html {
-    font-size: 16px; /* Base font size */
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
 
 body {
     font-family: var(--font-secondary);
     line-height: 1.7;
-    background-color: var(--color-background);
-    color: var(--color-text);
+    background-color: var(--color-background); /* Dark background */
+    color: var(--color-text); /* Light text default */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -53,10 +45,7 @@ body {
 
 main {
     flex-grow: 1;
-    max-width: 1150px;
-    width: 90%;
-    margin: 4rem auto;
-    padding: 0 1rem;
+    width: 100%; /* Allow hero to be full width */
 }
 
 /* === Typography === */
@@ -65,73 +54,64 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     line-height: 1.3;
     margin-bottom: 1rem;
+    color: var(--color-text-white); /* Brighter headings */
 }
+h1 { font-size: clamp(2.8rem, 6vw, 3.8rem); letter-spacing: -0.5px; }
 
-h1 {
-    font-size: clamp(2.5rem, 5vw, 3.2rem);
-    letter-spacing: -0.5px;
-}
-
+/* Default Paragraph style */
 p {
     margin-bottom: 1.5rem;
     max-width: 65ch; /* Limit paragraph width */
+    color: var(--color-text);
+    /* Centering for block element if max-width is applied */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .subtitle {
     font-family: var(--font-primary);
-    font-size: 1.15rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
     font-weight: 400;
     margin-bottom: 2rem;
+    color: var(--color-text-muted); /* Muted light grey */
+    max-width: 65ch; /* Limit width */
+    /* Centering for block element */
+    margin-left: auto;
+    margin-right: auto;
 }
+a { color: var(--color-accent-gold); text-decoration: none; transition: color 0.2s ease; } /* Link color */
+a:hover { color: var(--color-accent-gold-darker); text-decoration: none; }
 
-a {
-    color: var(--color-text);
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-a:hover {
-    color: var(--color-accent-gold);
-    text-decoration: none;
-}
-
-/* === Hero Section (with Background Image) === */
+/* === Hero Section (Full Viewport Dark) === */
 .hero {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 75vh; /* Increased height */
-    padding: 5rem 2rem; /* More padding */
-    border-radius: var(--border-radius-medium);
-    box-shadow: var(--shadow-soft);
-    overflow: hidden;
-    position: relative;
+    justify-content: center; /* Vertically center content */
+    align-items: center; /* Horizontally center content */
+    text-align: center; /* Center text within lines */
+    min-height: 100vh; /* Fill viewport height */
+    width: 100%; /* Fill viewport width */
+    padding: 4rem 1.5rem; /* Padding for content */
+    position: relative; /* For overlay and content */
     z-index: 0;
+    overflow: hidden; /* Prevent content spill */
 
     /* Background Image Settings */
     background-image:
         linear-gradient(var(--color-overlay-dark), var(--color-overlay-darker)),
-        url('panther2.png'); /* Ensure filename is correct */
-    background-size: cover;
-    background-position: center center;
+        url('panther2.png');
+    background-size: cover; /* Cover the area */
+    background-position: center center; /* Center image */
     background-repeat: no-repeat;
     /* background-attachment: fixed; */ /* Uncomment for parallax effect */
 }
 
 .hero-content {
-    flex: 0 0 auto; /* Don't grow/shrink, take natural size */
-    width: 100%; /* Ensure it spans width for centering */
-    max-width: 800px; /* Limit content width */
-    z-index: 2; /* Above background/overlay */
-}
-
-/* Text Colors within Hero for Dark Background */
-.hero .hero-content h1,
-.hero .hero-content .subtitle,
-.hero .hero-content p {
-    color: var(--color-text-light);
-    text-shadow: var(--text-shadow-darkbg);
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 850px; /* Max width for readability */
+    z-index: 2; /* Above background */
+    text-shadow: var(--text-shadow-darkbg); /* Add shadow for ALL text */
 }
 
 /* Specific Hero Heading Style (No Gradient) */
@@ -143,26 +123,29 @@ a:hover {
     -webkit-text-fill-color: unset;
 }
 
-/* Adjust subtitle color slightly */
-.hero .hero-content .subtitle {
-    color: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
+/* Ensure paragraphs within hero-content are correctly targeted for centering */
+.hero .hero-content p {
+    /* Inherits general p styles including max-width and margin auto */
+    color: var(--color-text); /* Override default p color if needed */
 }
+.hero .hero-content .subtitle {
+    /* Inherits .subtitle styles including max-width and margin auto */
+    color: var(--color-text-muted); /* Override default subtitle color if needed */
+}
+
 
 /* === Buttons === */
-.hero-buttons {
-    margin-top: 2.5rem;
-}
-
+.hero-buttons { margin-top: 2.5rem; }
 .button {
     display: inline-block;
-    padding: 0.85rem 2rem;
-    margin: 0.5rem 0.75rem 0.5rem 0;
+    padding: 0.9rem 2.2rem; /* Slightly larger padding */
+    margin: 0.6rem 0.8rem 0.6rem 0;
     border-radius: var(--border-radius-pill);
     font-family: var(--font-primary);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem; /* Slightly larger font */
     text-transform: uppercase;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.7px;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
@@ -172,133 +155,68 @@ a:hover {
 }
 .button:hover,
 .button:focus {
-    transform: translateY(-3px) scale(1.02);
+    transform: translateY(-3px) scale(1.03); /* Slightly more pop */
     box-shadow: var(--shadow-hover);
     text-decoration: none;
     outline: none;
 }
-.button:active {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
+.button:active { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
 
-/* Specific Button Styles */
-.waitlist-button {
-    background-color: var(--color-accent-gold);
-    color: var(--color-text);
-    border-color: var(--color-accent-gold);
-}
-.waitlist-button:hover, .waitlist-button:focus {
-    background-color: var(--color-accent-gold-darker);
-    border-color: var(--color-accent-gold-darker);
-    color: var(--color-text);
-}
+/* Specific Button Styles (Mostly unchanged, check contrasts) */
+.waitlist-button { background-color: var(--color-accent-gold); color: #111; /* Dark text on gold */ border-color: var(--color-accent-gold); }
+.waitlist-button:hover, .waitlist-button:focus { background-color: var(--color-accent-gold-darker); border-color: var(--color-accent-gold-darker); color: #111; }
 
-/* GitBook Button adjusted for Hero */
-.hero .gitbook-button {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--color-text-white);
-    border-color: var(--color-border-light);
-}
-.hero .gitbook-button:hover, .hero .gitbook-button:focus {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: var(--color-text-white);
-    border-color: var(--color-text-white);
-}
-/* Default GitBook Button (if used outside hero) */
-.gitbook-button {
-    background-color: transparent;
-    color: var(--color-text-muted);
-    border-color: var(--color-border);
-}
-.gitbook-button:hover, .gitbook-button:focus {
-    background-color: var(--color-background);
-    color: var(--color-text);
-    border-color: var(--color-text-muted);
-}
+.gitbook-button { background-color: rgba(255, 255, 255, 0.05); color: var(--color-text-light); border-color: var(--color-border-light); }
+.gitbook-button:hover, .gitbook-button:focus { background-color: rgba(255, 255, 255, 0.1); color: var(--color-text-white); border-color: rgba(255, 255, 255, 0.4); }
 
-.discord-button {
-    background-color: var(--color-discord-blue);
-    color: var(--color-text-white);
-    border-color: var(--color-discord-blue);
-}
-.discord-button:hover, .discord-button:focus {
-    background-color: var(--color-discord-blue-darker);
-    border-color: var(--color-discord-blue-darker);
-    color: var(--color-text-white);
-}
+.discord-button { background-color: var(--color-discord-blue); color: var(--color-text-white); border-color: var(--color-discord-blue); }
+.discord-button:hover, .discord-button:focus { background-color: var(--color-discord-blue-darker); border-color: var(--color-discord-blue-darker); color: var(--color-text-white); }
 
-.x-button {
-    background-color: var(--color-x-black);
-    color: var(--color-text-white);
-    border-color: var(--color-x-black);
-}
-.x-button:hover, .x-button:focus {
-    background-color: var(--color-x-black-darker);
-    border-color: var(--color-x-black-darker);
-    color: var(--color-text-white);
-}
+.x-button { background-color: var(--color-x-black); color: var(--color-text-white); border-color: var(--color-x-black); }
+.x-button:hover, .x-button:focus { background-color: var(--color-x-black-darker); border-color: var(--color-x-black-darker); color: var(--color-text-white); }
+
 
 /* === Footer === */
 footer {
     text-align: center;
-    padding: 2rem 1rem;
-    margin-top: auto;
-    background-color: var(--color-text);
-    color: rgba(255, 255, 255, 0.6);
+    padding: 1.5rem 1rem; /* Reduced padding */
+    margin-top: auto; /* Push to bottom */
+    background-color: var(--color-background-secondary); /* Slightly different dark */
+    color: var(--color-text-muted); /* Muted light text */
     font-size: 0.85rem;
     width: 100%;
 }
 
 /* === Animations === */
 /* Entrance Animations Application */
-.hero-content > * { /* Target direct children for stagger */
-  animation: fadeInSlideUp 0.8s ease-out forwards;
-  opacity: 0; /* Start hidden */
-}
-
+.hero-content > * { animation: fadeInSlideUp 0.9s ease-out forwards; opacity: 0; }
 /* Stagger the animations */
 .hero-content h1 { animation-delay: 0.1s; }
-.hero-content .subtitle { animation-delay: 0.2s; }
-.hero-content > p:not(.subtitle) { animation-delay: 0.3s; }
-.hero-buttons { animation-delay: 0.4s; }
-/* No delay needed for hero-image-container as it's gone */
+.hero-content .subtitle { animation-delay: 0.25s; }
+/* Target the specific paragraph for its delay */
+.hero-content > p:not(.subtitle) { animation-delay: 0.4s; }
+.hero-buttons { animation-delay: 0.55s; }
 
 /* === Animation Keyframes === */
 @keyframes fadeInSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); } /* Slightly larger slide */
+  to { opacity: 1; transform: translateY(0); }
 }
-/* (Removed pulseGlow and subtleGrow keyframes as image isn't interactable) */
 
 /* === Responsive Adjustments === */
-@media (max-width: 992px) {
-    h1 { font-size: clamp(2.2rem, 4.5vw, 2.8rem); }
-}
-
 @media (max-width: 768px) {
-    main { margin: 2.5rem auto; width: 92%; }
-    .hero { padding: 4rem 1.5rem; min-height: 65vh; }
-    .hero-content { max-width: 90%; } /* Allow slightly wider content */
+    h1 { font-size: clamp(2.5rem, 7vw, 3.2rem); }
+    .hero { padding: 3rem 1rem; min-height: 95vh; } /* Adjust padding/height */
+    .hero-content { max-width: 95%; }
+    /* Ensure paragraphs still center on mobile */
+     p, .subtitle { max-width: 90%; margin-left:auto; margin-right:auto; }
 }
-
 @media (max-width: 576px) {
     html { font-size: 15px; }
-    main { margin: 2rem auto; width: 95%; }
-    .hero { padding: 3rem 1rem; min-height: 60vh; }
-    .button {
-        display: block;
-        width: 90%;
-        max-width: 320px;
-        margin: 0.8rem auto;
-        padding: 0.9rem 1.5rem;
-    }
-    h1 { font-size: clamp(2rem, 6vw, 2.5rem); } /* Adjust mobile heading size */
+    .hero { padding: 2.5rem 1rem; min-height: 90vh;}
+    .button { display: block; width: 90%; max-width: 320px; margin: 1rem auto; padding: 1rem 1.5rem; }
+    h1 { font-size: clamp(2.2rem, 8vw, 2.8rem); }
     .subtitle { font-size: 1rem; }
+    /* Ensure paragraphs still center on small mobile */
+     p, .subtitle { max-width: 95%; margin-left:auto; margin-right:auto; }
 }
