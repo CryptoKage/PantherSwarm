@@ -123,14 +123,12 @@ a:hover { color: var(--color-accent-gold-darker); text-decoration: none; }
     -webkit-text-fill-color: unset;
 }
 
-/* Ensure paragraphs within hero-content are correctly targeted for centering */
+/* Ensure paragraphs within hero-content are correctly targeted */
 .hero .hero-content p {
-    /* Inherits general p styles including max-width and margin auto */
-    color: var(--color-text); /* Override default p color if needed */
+    color: var(--color-text);
 }
 .hero .hero-content .subtitle {
-    /* Inherits .subtitle styles including max-width and margin auto */
-    color: var(--color-text-muted); /* Override default subtitle color if needed */
+    color: var(--color-text-muted);
 }
 
 
