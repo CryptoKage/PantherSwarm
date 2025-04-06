@@ -24,8 +24,8 @@
     --text-shadow-darkbg: 1px 1px 3px rgba(0, 0, 0, 0.6);
     --border-radius-medium: 8px; /* Slightly less rounded */
     --border-radius-pill: 50px;
-    /* Transition Speed */
-    --transition-speed: 0.8s; /* MUST MATCH loader.js logic source */
+    /* Transition Speed for main content fade-in (if needed) */
+    --content-fade-speed: 0.5s;
 }
 
 /* Basic Reset */
@@ -43,45 +43,55 @@ body {
     overflow: hidden; /* Prevent scrollbars during loading */
 }
 
-/* === Matrix Canvas Styling === */
-canvas#Matrix {
-    position: fixed; /* Cover everything */
+/* === Matrix Loader Styling === */
+/* Container for the matrix effect */
+#matrix-loading {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000; /* Black background for matrix */
-    z-index: 100; /* Above main content initially */
+    background-color: #000;
+    z-index: 100;
     opacity: 1;
     visibility: visible;
-    transition: opacity var(--transition-speed) ease-out, visibility var(--transition-speed) ease-out;
+    /* Transition handled by matrix.js timeout now, but keep for potential direct style changes */
+     transition: opacity 2s ease-in-out, visibility 2s ease-in-out; /* Match JS fade time */
 }
-/* Style to fade out canvas */
-canvas#Matrix.fade-out {
-    opacity: 0;
-    visibility: hidden;
+/* Canvas itself */
+#matrix-canvas {
+    display: block; /* Remove potential extra space */
+    width: 100%;
+    height: 100%;
 }
 
-
-/* === Main Content Styling (Initially Hidden) === */
-#main-content {
+/* === Main Website Content Styling (Initially Hidden) === */
+#website-content {
     opacity: 0;
     visibility: hidden;
-    transition: opacity var(--transition-speed) ease-in, visibility var(--transition-speed) ease-in;
-    transition-delay: 0.2s; /* Slight delay after canvas starts fading */
-    /* Re-apply flex centering once visible */
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Ensure footer stays down */
+    transition: opacity var(--content-fade-speed) ease-in, visibility var(--content-fade-speed) ease-in;
+    /* display: flex; */ /* We'll add flex later if needed, start simple */
+    /* flex-direction: column; */
+    min-height: 100vh;
 }
-/* Style to fade in main content */
-#main-content.visible {
+/* Class added by matrix.js to show content */
+#website-content.visible {
     opacity: 1;
     visibility: visible;
+    /* Re-enable scrolling when content is shown */
+    /* JS should handle body overflow, but belt-and-suspenders */
+     overflow: auto;
 }
 
-/* Re-apply main width constraints *inside* #main-content */
-#main-content main {
+/* Ensure flex is applied to structure inside the visible container */
+#website-content.visible {
+     display: flex;
+     flex-direction: column;
+}
+
+
+/* Apply width constraints to main content area */
+#website-content main {
     flex-grow: 1;
     width: 100%;
 }
@@ -94,23 +104,22 @@ p { margin-bottom: 1.5rem; max-width: 65ch; color: var(--color-text); margin-lef
 a { color: var(--color-accent-gold); text-decoration: none; transition: color 0.2s ease; }
 a:hover { color: var(--color-accent-gold-darker); text-decoration: none; }
 
-/* === Hero Section (Full Viewport Dark - Applied within #main-content) === */
+/* === Hero Section (Full Viewport Dark - Applied within #website-content) === */
 .hero {
     display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
     min-height: 100vh; width: 100%; padding: 4rem 1.5rem; position: relative; z-index: 0; overflow: hidden;
-    /* Background Image Settings - USING ABSOLUTE PATH FOR IMAGE */
+    /* Background Image Settings - USING RELATIVE PATH FOR IMAGE */
     background-image:
         linear-gradient(var(--color-overlay-dark), var(--color-overlay-darker)),
-        url('/panther2.png'); /* <<< Note the leading slash */
+        url('panther2.png'); /* <<< Relative path */
     background-size: cover; background-position: center center; background-repeat: no-repeat;
-    /* background-attachment: fixed; */ /* Uncomment for parallax effect */
 }
 .hero-content { flex: 0 0 auto; width: 100%; max-width: 850px; z-index: 2; text-shadow: var(--text-shadow-darkbg); }
 .hero .hero-content h1 { color: var(--color-text-white); background: none; -webkit-background-clip: unset; background-clip: unset; -webkit-text-fill-color: unset; }
 .hero .hero-content p { color: var(--color-text); }
 .hero .hero-content .subtitle { color: var(--color-text-muted); }
 
-/* === Buttons (Unchanged) === */
+/* === Buttons (Unchanged styling) === */
 .hero-buttons { margin-top: 2.5rem; }
 .button { display: inline-block; padding: 0.9rem 2.2rem; margin: 0.6rem 0.8rem 0.6rem 0; border-radius: var(--border-radius-pill); font-family: var(--font-primary); font-weight: 600; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.7px; text-align: center; text-decoration: none; cursor: pointer; border: 2px solid transparent; transition: all 0.25s ease-in-out; line-height: 1.5; }
 .button:hover, .button:focus { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-hover); text-decoration: none; outline: none; }
@@ -124,16 +133,29 @@ a:hover { color: var(--color-accent-gold-darker); text-decoration: none; }
 .x-button { background-color: var(--color-x-black); color: var(--color-text-white); border-color: var(--color-x-black); }
 .x-button:hover, .x-button:focus { background-color: var(--color-x-black-darker); border-color: var(--color-x-black-darker); color: var(--color-text-white); }
 
-/* === Footer (Unchanged) === */
-#main-content footer { text-align: center; padding: 1.5rem 1rem; background-color: var(--color-background-secondary); color: var(--color-text-muted); font-size: 0.85rem; width: 100%; }
+/* === Footer (Applied within #website-content) === */
+#website-content footer {
+     text-align: center;
+     padding: 1.5rem 1rem;
+     background-color: var(--color-background-secondary);
+     color: var(--color-text-muted);
+     font-size: 0.85rem;
+     width: 100%;
+     /* margin-top: auto; is implicitly handled by main flex-grow */
+ }
 
-/* === Animations (Unchanged) === */
+
+/* === Animations (Entrance for main content - No stagger needed now) === */
+/* We rely on the #website-content.visible transition */
+/* Optional: Re-add staggered animation if desired, applied to children of .hero-content */
+/*
 .hero-content > * { animation: fadeInSlideUp 0.9s ease-out forwards; opacity: 0; }
-.hero-content h1 { animation-delay: calc(var(--transition-speed) + 0.2s); }
-.hero-content .subtitle { animation-delay: calc(var(--transition-speed) + 0.35s); }
-.hero-content > p:not(.subtitle) { animation-delay: calc(var(--transition-speed) + 0.5s); }
-.hero-buttons { animation-delay: calc(var(--transition-speed) + 0.65s); }
+.hero-content h1 { animation-delay: 0.1s; } // Adjust delays based on content fade
+.hero-content .subtitle { animation-delay: 0.2s; }
+.hero-content > p:not(.subtitle) { animation-delay: 0.3s; }
+.hero-buttons { animation-delay: 0.4s; }
 @keyframes fadeInSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+*/
 
 /* === Responsive Adjustments (Unchanged) === */
 @media (max-width: 768px) { h1 { font-size: clamp(2.5rem, 7vw, 3.2rem); } .hero { padding: 3rem 1rem; min-height: 95vh; } .hero-content { max-width: 95%; } p, .subtitle { max-width: 90%; } }
