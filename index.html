@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- ADD THIS META TAG FOR CONTENT SECURITY POLICY -->
+    <!-- Updated CSP Tag (Removed unsafe-eval) -->
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
-                   script-src 'self' https://fonts.googleapis.com 'unsafe-eval';
+                   script-src 'self' https://fonts.googleapis.com;
                    style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
                    font-src 'self' https://fonts.gstatic.com;
                    img-src 'self' data:;
@@ -16,10 +16,10 @@
 
     <title>PantherSwarm - Loading...</title> <!-- Initial title -->
 
-    <!-- Link to Stylesheet with ABSOLUTE PATH -->
-    <link rel="stylesheet" href="/style.css">
+    <!-- Link to Stylesheet with RELATIVE PATH -->
+    <link rel="stylesheet" href="style.css">
 
-    <!-- Google Fonts Link (Inter & Roboto) - External URLs are fine -->
+    <!-- Google Fonts Link (Inter & Roboto) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -27,11 +27,13 @@
 </head>
 <body>
 
-    <!-- Matrix Effect Canvas - ID MUST BE "Matrix" -->
-    <canvas id="Matrix"></canvas>
+    <!-- Container for Matrix Effect - ID MATCHES matrix.js -->
+    <div id="matrix-loading">
+        <canvas id="matrix-canvas"></canvas>
+    </div>
 
-    <!-- Your Main Website Content (Initially Hidden) - ID MUST BE "main-content" -->
-    <div id="main-content">
+    <!-- Your Main Website Content (Initially Hidden) - ID MATCHES matrix.js -->
+    <div id="website-content" class="hidden">
         <main>
             <!-- Main Hero Section (Image is background via CSS) -->
             <section class="hero">
@@ -52,13 +54,12 @@
         <footer>
             <p>Copyright © 2025 PantherSwarm - All Rights Reserved.</p>
         </footer>
-    </div> <!-- End #main-content -->
+    </div> <!-- End #website-content -->
 
     <!-- SCRIPTS AT THE END OF BODY -->
-    <!-- Matrix Effect Script with ABSOLUTE PATH -->
-    <script src="/matrix.js"></script>
-    <!-- Loader/Transition Script with ABSOLUTE PATH -->
-    <script src="/loader.js"></script>
+    <!-- Matrix Effect Script with RELATIVE PATH - Runs the logic now -->
+    <script src="matrix.js"></script>
+    <!-- NO loader.js script tag anymore -->
 
 </body>
 </html>
