@@ -3,39 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- CSP Tag (Allows self, fonts, inline styles, but NO unsafe-eval for now) -->
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self';
-                   script-src 'self' https://fonts.googleapis.com;
-                   style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
-                   font-src 'self' https://fonts.gstatic.com;
-                   img-src 'self' data:;
-                   connect-src 'self';">
-    <!-- END OF CSP META TAG -->
-
-    <title>PantherSwarm - Loading...</title> <!-- Initial title -->
-
-    <!-- Link to Stylesheet with ABSOLUTE PATH -->
-    <link rel="stylesheet" href="/style.css">
-
-    <!-- Google Fonts Link (Inter & Roboto) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://fonts.googleapis.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <title>PantherSwarm - Loading...</title>
+    <link rel="stylesheet" href="/PantherSwarm/style.css"> {/* CORRECTED PATH */}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
-
 </head>
 <body>
-
-    <!-- Container for Matrix Effect - ID MATCHES matrix.js -->
-    <div id="matrix-loading">
-        <canvas id="matrix-canvas"></canvas>
-    </div>
-
-    <!-- Your Main Website Content (Initially Hidden) - ID MATCHES matrix.js -->
+    <div id="matrix-loading"> <canvas id="matrix-canvas"></canvas> </div>
     <div id="website-content" class="hidden">
         <main>
-            <!-- Main Hero Section (Image is background via CSS) -->
             <section class="hero">
                 <div class="hero-content">
                    <h1>PantherSwarm</h1>
@@ -49,17 +27,9 @@
                    </div>
                 </div>
             </section>
-            <!-- End Hero Section -->
         </main>
-        <footer>
-            <p>Copyright © 2025 PantherSwarm - All Rights Reserved.</p>
-        </footer>
-    </div> <!-- End #website-content -->
-
-    <!-- SCRIPTS AT THE END OF BODY -->
-    <!-- Matrix Effect Script with ABSOLUTE PATH -->
-    <script src="/matrix.js"></script>
-    <!-- NO loader.js script tag -->
-
+        <footer> <p>Copyright © 2025 PantherSwarm - All Rights Reserved.</p> </footer>
+    </div>
+    <script src="/PantherSwarm/matrix.js"></script> {/* CORRECTED PATH */}
 </body>
 </html>
