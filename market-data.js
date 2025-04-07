@@ -180,7 +180,9 @@ function connectWebSocket() {
     socket.addEventListener('message', function (event) {
         try {
             const messageData = JSON.parse(event.data);
-
+                    // --- Add this line for debugging ---
+                        console.log(`[WS DEBUG] Raw Msg Received - Channel: ${messageData.channel || 'N/A'}, DataKeys: ${messageData.data ? Object.keys(messageData.data).join(', ') : 'N/A'}`);
+                    // -----------------------------------
             // --- webData2 Processing ---
             if (messageData.channel === 'webData2' && messageData.data) {
                  console.log("[WS] Received webData2 (structure log follows):", JSON.stringify(messageData.data, null, 2));
