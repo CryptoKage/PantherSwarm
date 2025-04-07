@@ -1,132 +1,202 @@
-/* === Base Styles & Variables === */
-:root {
-    --font-primary: 'Inter', sans-serif;
-    --font-secondary: 'Roboto', sans-serif;
-    /* Dark Theme Colors */
-    --color-background: #080A10; /* Dark Blue/Black */
-    --color-background-secondary: #1A1D2A; /* Dark muted blue for footer */
-    --color-text: #e1e1e1; /* Light Grey base text */
-    --color-text-muted: #a0a0a0; /* Medium light grey */
-    --color-text-white: #ffffff; /* Pure white for headings */
-    /* Accent Blue Palette */
-    --color-accent-blue-bright: #33A1FF; /* Vibrant Tech Blue */
-    --color-accent-blue-dim: #66B8FF; /* Lighter/dimmer blue */
-    --color-accent-blue-hover: #80C8FF; /* Lighter for hover */
-    --color-border-blue-light: rgba(51, 161, 255, 0.2); /* Subtle blue border */
-    /* Other Accent Colors (Kept for contrast/specific buttons) */
-    --color-accent-gold: #D4AF37;
-    --color-accent-gold-darker: #c8a030;
-    --color-discord-blue: #5865F2;
-    --color-discord-blue-darker: #4a54cf;
-    --color-x-black: #000000;
-    --color-x-black-darker: #222222;
-    /* Overlay for BG Image */
-    --color-overlay-dark: rgba(8, 10, 16, 0.78); /* Dark Blue/Black overlay */
-    --color-overlay-darker: rgba(8, 10, 16, 0.88);
-    /* Other Variables */
-    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.3);
-    --text-shadow-darkbg: 1px 1px 4px rgba(0, 0, 0, 0.7);
-    --border-radius-medium: 8px;
-    --border-radius-pill: 50px;
-    /* Transition Speed */
-    --content-fade-speed: 0.5s;
-}
-
-/* Basic Reset */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; }
-
+/* --- Global Resets & Defaults --- */
 body {
-    font-family: var(--font-secondary);
-    line-height: 1.7;
-    background-color: var(--color-background);
-    color: var(--color-text); /* Base text light grey */
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
+    background-color: #050505; /* Very dark grey, near black */
+    color: #cccccc; /* Light grey default text for readability */
+    font-family: 'Inter', 'Roboto', sans-serif; /* Readable default font */
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
 }
 
-/* === Matrix Loader Styling === */
+h1, h2, h3, h4, h5, h6 {
+    color: #33A1FF; /* Tech Blue for headings */
+    font-family: 'Courier New', Courier, monospace; /* Monospace for tech feel */
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    letter-spacing: 1px; /* Add some spacing */
+    font-weight: 600; /* Slightly bolder headings */
+}
+
+a {
+    color: #66ccff; /* Lighter variant of Tech Blue for links */
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: #99ddff; /* Brighten link on hover */
+}
+
+/* --- Button Styling (Consistent) --- */
+/* Applies to index page buttons and market data buttons */
+.button,             /* Class from index.html */
+.button-back,        /* Class from market-data.html */
+.controls button {   /* Button inside controls div */
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: 1px solid #33A1FF; /* <<<=== VISIBLE TECH BLUE BORDER */
+    border-radius: 4px;
+    background-color: rgba(51, 161, 255, 0.1); /* Faint blue background */
+    color: #33A1FF; /* Tech Blue text */
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.button:hover,
+.button-back:hover,
+.controls button:hover {
+    background-color: rgba(51, 161, 255, 0.3); /* Darken background on hover */
+    color: #ffffff; /* White text on hover */
+    box-shadow: 0 0 8px rgba(51, 161, 255, 0.5); /* Add blue glow */
+}
+
+/* --- Index Page Specific --- */
+#website-content {
+    padding: 20px;
+    opacity: 0; /* Start hidden for fade-in */
+    transition: opacity 0.5s ease-in; /* CSS transition for fade-in */
+}
+#website-content.visible { /* Add this class via JS when showing */
+    opacity: 1;
+}
+
+.hero {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.hero h1 {
+    font-size: 3em;
+    margin-bottom: 0.1em;
+    color: #33A1FF; /* Tech Blue for main title too */
+    text-shadow: 0 0 5px rgba(51, 161, 255, 0.5); /* Subtle blue glow */
+}
+
+/* Keep subtitles readable */
+.kanji-subtitle, .subtitle {
+    font-family: 'Courier New', Courier, monospace;
+    color: #aaaaaa; /* Lighter grey */
+    margin-bottom: 1em;
+}
+.kanji-subtitle { font-size: 1.5em; }
+
+.hero p {
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    color: #bbbbbb;
+}
+
+.hero-buttons { margin-top: 30px; }
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    font-size: 0.8em;
+    color: #444; /* Dark grey footer text */
+    border-top: 1px solid #222; /* Subtle top border */
+}
+
+/* --- Matrix Animation Canvas --- */
 #matrix-loading {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #000; z-index: 100; opacity: 1; visibility: visible;
-    transition: opacity 2s ease-in-out, visibility 2s ease-in-out;
+    background-color: #000; /* Black background for matrix */
+    z-index: 1000;
+    opacity: 1; /* Start visible */
+    visibility: visible; /* Start visible */
+    /* Transition is handled by JS inline style now, but good fallback: */
+    /* transition: opacity 2s ease-in-out, visibility 2s ease-in-out; */
 }
-#matrix-canvas { display: block; width: 100%; height: 100%; }
+#matrix-canvas { display: block; }
 
-/* === Main Website Content Styling === */
-#website-content {
-    opacity: 0; visibility: hidden;
-    transition: opacity var(--content-fade-speed) ease-in, visibility var(--content-fade-speed) ease-in;
-    min-height: 100vh;
-}
-#website-content.visible {
-    opacity: 1; visibility: visible; overflow: auto;
-    display: flex; flex-direction: column;
-}
-#website-content main { flex-grow: 1; width: 100%; }
-
-/* === Typography (Using Blue Accents) === */
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-primary); font-weight: 700; line-height: 1.3; margin-bottom: 1rem; color: var(--color-text-white); }
-h1 { font-size: clamp(2.8rem, 6vw, 3.8rem); letter-spacing: -0.5px; margin-bottom: 0.2rem; }
-
-/* Styling for the Kanji Subtitle (Blue) */
-.kanji-subtitle {
-    font-family: var(--font-primary); font-size: clamp(1.5rem, 3vw, 1.8rem);
-    color: var(--color-accent-blue-bright); /* << CHANGED TO BLUE */
-    margin-top: 0.1rem; margin-bottom: 1.8rem; letter-spacing: 2px; font-weight: 600;
-    margin-left: auto; margin-right: auto; max-width: 65ch;
+.hidden { /* Used by matrix.js initially */
+    display: none;
 }
 
-p { margin-bottom: 1.5rem; max-width: 65ch; color: var(--color-text); margin-left: auto; margin-right: auto; }
-.subtitle { font-family: var(--font-primary); font-size: clamp(1.1rem, 2.5vw, 1.3rem); font-weight: 400; margin-bottom: 2rem; color: var(--color-text-muted); max-width: 65ch; margin-left: auto; margin-right: auto; }
 
-a { color: var(--color-accent-blue-dim); text-decoration: none; transition: color 0.2s ease; } /* Links start dimmer blue */
-a:hover { color: var(--color-accent-blue-hover); text-decoration: none; } /* Hover brighter blue */
-
-/* === Hero Section (Blue Theme) === */
-.hero {
-    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-    min-height: 100vh; width: 100%; padding: 4rem 1.5rem; position: relative; z-index: 0; overflow: hidden;
-    background-image:
-        linear-gradient(var(--color-overlay-dark), var(--color-overlay-darker)),
-        url('/PantherSwarm/panther2.png');
-    background-size: cover; background-position: center center; background-repeat: no-repeat;
+/* --- Market Data Page Specific --- */
+#market-data-page { /* Add ID="market-data-page" to <body> of market-data.html */
+     padding: 15px;
 }
-.hero-content { flex: 0 0 auto; width: 100%; max-width: 850px; z-index: 2; text-shadow: var(--text-shadow-darkbg); }
-.hero .hero-content h1 { color: var(--color-text-white); background: none; -webkit-background-clip: unset; background-clip: unset; -webkit-text-fill-color: unset; }
-/* Paragraph/Subtitle/Kanji colors set above */
 
-/* === Buttons (Adjusted for Blue Theme) === */
-.hero-buttons { margin-top: 2.5rem; }
-.button { display: inline-block; padding: 0.9rem 2.2rem; margin: 0.6rem 0.8rem 0.6rem 0; border-radius: var(--border-radius-pill); font-family: var(--font-primary); font-weight: 600; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.7px; text-align: center; text-decoration: none; cursor: pointer; border: 2px solid transparent; transition: all 0.25s ease-in-out; line-height: 1.5; }
-.button:hover, .button:focus { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-hover); text-decoration: none; outline: none; }
-.button:active { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
+.layout-container { display: flex; flex-wrap: wrap; gap: 20px; }
+.main-content { flex: 2; min-width: 400px; display: flex; flex-direction: column; }
+.overview-sidebar { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px; }
 
-/* Keeping Waitlist Gold for primary action contrast */
-.waitlist-button { background-color: var(--color-accent-gold); color: #111; border-color: var(--color-accent-gold); }
-.waitlist-button:hover, .waitlist-button:focus { background-color: var(--color-accent-gold-darker); border-color: var(--color-accent-gold-darker); color: #111; }
+/* Market Controls styling */
+.controls {
+    background-color: #111111; /* Dark background */
+    padding: 15px; margin-bottom: 15px; border-radius: 5px;
+    border: 1px solid #1a4c7f; /* Darker blue border */
+    display: flex; flex-wrap: wrap; gap: 15px; align-items: center;
+}
+.controls label { margin-right: 5px; color: #88aaff; font-family: 'Courier New', monospace; }
+.controls input[type="text"] {
+    padding: 8px; border: 1px solid #2266aa; background-color: #0a0a0a;
+    color: #99ccff; border-radius: 4px; font-family: monospace;
+}
 
-/* GitBook button uses Blue outline */
-.gitbook-button { background-color: rgba(51, 161, 255, 0.08); /* Subtle blue bg */ color: var(--color-accent-blue-dim); border-color: var(--color-border-blue-light); }
-.gitbook-button:hover, .gitbook-button:focus { background-color: rgba(51, 161, 255, 0.15); color: var(--color-accent-blue-bright); border-color: rgba(51, 161, 255, 0.5); }
+/* Market Raw Data Log styling */
+#data-container {
+    background-color: #0a0a0a; /* Match body */
+    color: #99ccff; /* Default log text: Light blue */
+    border: 1px solid #1a4c7f; /* Darker blue border */
+    padding: 10px; height: 600px; overflow-y: scroll;
+    font-family: 'Consolas', 'Monaco', monospace;
+    white-space: pre-wrap; font-size: 0.9em;
+    flex-grow: 1; border-radius: 5px;
+    box-shadow: inset 0 0 8px rgba(51, 161, 255, 0.2); /* Inner blue glow */
+}
+#data-container .message.hidden { display: none; }
+/* Specific styles for log message types */
+#data-container .log-trade { color: #ffffff; } /* White for trades */
+#data-container .log-trade .side-B { color: #39ff14; font-weight: bold; } /* Green for Buy */
+#data-container .log-trade .side-S { color: #ff4444; font-weight: bold; } /* Red for Sell */
+#data-container .log-l2 { color: #66aaff; opacity: 0.9; } /* Slightly lighter blue for L2 */
+#data-container .log-error { color: #ffcc00; font-weight: bold;} /* Yellow */
+#data-container .log-info { color: #888888; font-style: italic; } /* Grey */
+#data-container .log-other { color: #bbbbbb; } /* Fallback light grey */
+#data-container .log-separator { border-top: 1px dashed #1a4c7f; margin-top: 5px; padding-top: 5px; }
+#data-container pre { margin: 0; font-size: inherit; color: #aaaaaa; } /* Style JSON within pre */
 
-.discord-button { background-color: var(--color-discord-blue); color: var(--color-text-white); border-color: var(--color-discord-blue); }
-.discord-button:hover, .discord-button:focus { background-color: var(--color-discord-blue-darker); border-color: var(--color-discord-blue-darker); color: var(--color-text-white); }
 
-.x-button { background-color: var(--color-x-black); color: var(--color-text-white); border-color: var(--color-x-black); }
-.x-button:hover, .x-button:focus { background-color: var(--color-x-black-darker); border-color: var(--color-x-black-darker); color: var(--color-text-white); }
+/* Market Overview Grid styling */
+.overview-grid {
+    background-color: #111111; border: 1px solid #1a4c7f;
+    padding: 15px; border-radius: 5px;
+}
+.overview-grid h3 {
+    margin-top: 0; margin-bottom: 10px; color: #33A1FF; /* Tech Blue */
+    border-bottom: 1px solid #2266aa; padding-bottom: 5px; font-size: 1.1em;
+}
+.overview-grid ul { list-style: none; padding: 0; margin: 0; font-size: 0.9em; }
+.overview-grid li {
+    display: flex; justify-content: space-between; padding: 5px 2px;
+    border-bottom: 1px dotted #1a4c7f; font-family: 'Consolas', 'Monaco', monospace;
+}
+.overview-grid li:last-child { border-bottom: none; }
+.overview-grid .coin { font-weight: bold; color: #dddddd; }
+.overview-grid .value { color: #bbbbbb; }
+.overview-grid .value.positive { color: #39ff14; font-weight: bold; } /* Keep Green */
+.overview-grid .value.negative { color: #ff4444; font-weight: bold; } /* Keep Red */
+.overview-grid .placeholder { color: #666; justify-content: center; font-style: italic;}
 
 
-/* === Footer === */
-#website-content footer {
-     text-align: center; padding: 1.5rem 1rem; background-color: var(--color-background-secondary);
-     color: var(--color-text-muted); font-size: 0.85rem; width: 100%; margin-top: auto;
- }
+/* Market Status styling */
+.status {
+    font-weight: bold; margin-bottom: 15px; padding: 10px; border-radius: 4px;
+    text-align: center; font-family: 'Courier New', monospace; border: 1px solid;
+}
+.status.connecting { background-color: #cc8400; color: #000; border-color: #ffa500; }
+.status.connected { background-color: #1a4c7f; color: #99ddff; border-color: #33A1FF; } /* Blue connected */
+.status.error { background-color: #a72834; color: #ffffff; border-color: #dc3545; }
+.status.disconnected { background-color: #b28704; color: #000; border-color: #ffc107; }
+.status.updating { background-color: #0f7180; color: #ffffff; border-color: #17a2b8; } /* Keep cyan for updating */
 
-/* === Animations (Removed stagger, relies on main content fade) === */
-
-/* === Responsive Adjustments (Unchanged) === */
-@media (max-width: 768px) { h1 { font-size: clamp(2.5rem, 7vw, 3.2rem); } .hero { padding: 3rem 1rem; min-height: 95vh; } .hero-content { max-width: 95%; } p, .subtitle, .kanji-subtitle { max-width: 90%; } }
-@media (max-width: 576px) { html { font-size: 15px; } .hero { padding: 2.5rem 1rem; min-height: 90vh;} .button { display: block; width: 90%; max-width: 320px; margin: 1rem auto; padding: 1rem 1.5rem; } h1 { font-size: clamp(2.2rem, 8vw, 2.8rem); } .subtitle { font-size: 1rem; } p, .subtitle, .kanji-subtitle { max-width: 95%; } }
+.button-back { align-self: flex-start; margin-bottom: 15px; }
