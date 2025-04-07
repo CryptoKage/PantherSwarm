@@ -1,9 +1,9 @@
 // --- Configuration ---
 const WEBSOCKET_URL = "wss://api.hyperliquid.xyz/ws";
-let currentLogCoin = "ETH";
+let currentLogCoin = "ETH"; // Still needed for display logic, even if not subscribing initially
 const L2_LOG_INTERVAL_MS = 5 * 60 * 1000;
-const KEY_TICKERS = ["BTC", "ETH", "SOL"];
-const SUBSCRIBE_DELAY_MS = 200; // Added delay before sending subscriptions
+const KEY_TICKERS = ["BTC", "ETH", "SOL"]; // Still needed for display logic
+const SUBSCRIBE_DELAY_MS = 200;
 
 // --- Get HTML Elements ---
 // ... (Keep all getElementById calls) ...
@@ -35,25 +35,35 @@ let messageCounter = 0;
 const MAX_MESSAGES_LOG = 250;
 
 // --- Helper Functions ---
-function formatLargeNumber(num) { /* ... no changes ... */ }
-function formatFundingRate(rate) { /* ... no changes ... */ }
-function formatTimestamp(timestamp) { /* ... no changes ... */ }
-function formatPercent(num) { /* ... no changes ... */ }
+function formatLargeNumber(num) { /* ... */ }
+function formatFundingRate(rate) { /* ... */ }
+function formatTimestamp(timestamp) { /* ... */ }
+function formatPercent(num) { /* ... */ }
 
 // --- Overview Display Logic ---
-function updateOverviewDisplay() { /* ... no changes ... */ }
-function renderList(listElement, data, formatter, titleOverride = null, placeholder = "No Data Available") { /* ... no changes ... */ }
+function updateOverviewDisplay() { /* ... */ }
+function renderList(listElement, data, formatter, titleOverride = null, placeholder = "No Data Available") { /* ... */ }
 
 // --- Raw Log Display Logic ---
-function addMessageToLog(rawMessageData, messageType = 'log-other') { /* ... no changes ... */ }
-function scrollToBottomIfNeeded() { /* ... no changes ... */ }
+function addMessageToLog(rawMessageData, messageType = 'log-other') { /* ... */ }
+function scrollToBottomIfNeeded() { /* ... */ }
 
 // --- Key Ticker Update Logic ---
-function updateTickerDisplay(coin, data) { /* ... no changes ... */ }
+function updateTickerDisplay(coin, data) { /* ... */ }
 
 // --- WebSocket Connection & Subscription ---
-function subscribeToLogCoin(coin) { /* ... no changes ... */ }
-function unsubscribeFromLogCoin(coin) { /* ... no changes ... */ }
+// NOTE: These functions still exist but might not be called if we comment out the calls
+function subscribeToLogCoin(coin) {
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    console.log(`[WS] Subscribing log channels for ${coin}...`);
+    const subscriptions = [ { type: "l2Book", coin: coin }, { type: "trades", coin: coin } ];
+    subscriptions.forEach(sub => {
+        const message = { method: "subscribe", subscription: sub };
+        try { socket.send(JSON.stringify(message)); console.log("[WS] Sent log subscribe:", message); }
+        catch (e) { console.error("[WS] Error sending log subscribe:", e); }
+    });
+}
+function unsubscribeFromLogCoin(coin) { /* ... */ }
 
 function connectWebSocket() {
     console.log("[WS] Attempting Connection...");
@@ -62,47 +72,54 @@ function connectWebSocket() {
     statusDiv.className = 'status connecting';
     // ... (Reset HTML placeholders) ...
     // ... (Clear intervals, reset data stores) ...
-    lastL2LogTime = 0; // Important to reset
+    lastL2LogTime = 0;
 
     try { socket = new WebSocket(WEBSOCKET_URL); }
-    catch (e) { /* ... error handling ... */ return; }
+    catch (e) { console.error("[WS] WebSocket creation failed:", e); statusDiv.textContent = "WebSocket Creation Failed!"; statusDiv.className = 'status error'; return; }
 
     socket.addEventListener('open', function (event) {
         console.log('[WS] Connection Opened.');
-        statusDiv.textContent = "Connected! Subscribing..."; // Initial status
+        statusDiv.textContent = "Connected! Subscribing (TEST MODE)..."; // Updated status
         statusDiv.className = 'status connected';
 
-        // --- *** ADDED DELAY FOR SUBSCRIPTIONS *** ---
         console.log(`[WS] Waiting ${SUBSCRIBE_DELAY_MS}ms before sending subscriptions...`);
         setTimeout(() => {
             if (!socket || socket.readyState !== WebSocket.OPEN) {
                  console.warn("[WS] WebSocket closed before subscriptions could be sent.");
                  return;
             }
-            console.log("[WS] Sending subscriptions now...");
+            console.log("[WS] Sending ONLY webData2 subscription for testing...");
 
-            // Subscribe to overview data
+            // *** === ISOLATION TEST === ***
+            // Subscribe ONLY to overview data
             const overviewSubscription = { method: "subscribe", subscription: { type: "webData2" }};
-            try { socket.send(JSON.stringify(overviewSubscription)); console.log("[WS] Sent overview subscribe"); }
+            try {
+                 socket.send(JSON.stringify(overviewSubscription));
+                 console.log("[WS] Sent ONLY overview (webData2) subscribe");
+            }
             catch (e) { console.error("[WS] Error sending overview subscribe:", e); }
 
+            // --- Temporarily Commented Out ---
+            /*
             // Subscribe to initial log coin
-            subscribeToLogCoin(currentLogCoin); // This function already has try/catch
+            // subscribeToLogCoin(currentLogCoin);
 
             // Subscribe to Key Tickers
-            KEY_TICKERS.forEach(coin => {
-                const tickerSubscription = { method: "subscribe", subscription: { type: "ticker", coin: coin }};
-                 try { socket.send(JSON.stringify(tickerSubscription)); console.log(`[WS] Sent ticker subscribe for ${coin}`); }
-                 catch (e) { console.error(`[WS] Error sending ticker subscribe for ${coin}:`, e); }
-            });
+            // KEY_TICKERS.forEach(coin => {
+            //     const tickerSubscription = { method: "subscribe", subscription: { type: "ticker", coin: coin }};
+            //      try { socket.send(JSON.stringify(tickerSubscription)); console.log(`[WS] Sent ticker subscribe for ${coin}`); }
+            //      catch (e) { console.error(`[WS] Error sending ticker subscribe for ${coin}:`, e); }
+            // });
+            */
+            // --- End Commented Out ---
 
              // Update status after attempting subscriptions
-             statusDiv.textContent = "Connected / Subscribed";
+             statusDiv.textContent = "Connected / Subscribed (webData2 Only)";
 
-        }, SUBSCRIBE_DELAY_MS); // Wait before sending
+        }, SUBSCRIBE_DELAY_MS);
 
-        // Start checking if overview data arrived (Keep this outside the timeout)
-        if (overviewUpdateInterval) clearInterval(overviewUpdateInterval); // Clear old interval just in case
+        // Start checking if overview data arrived
+        if (overviewUpdateInterval) clearInterval(overviewUpdateInterval);
         overviewUpdateInterval = setInterval(checkOverviewDataReceived, 7000);
     });
 
@@ -110,72 +127,54 @@ function connectWebSocket() {
         try {
             const messageData = JSON.parse(event.data);
 
-            // --- DEBUG LOGGING (Keep this active) ---
-             console.log(`[WS DEBUG] Raw Msg Received - Channel: ${messageData.channel || 'N/A'}, DataKeys: ${messageData.data ? Object.keys(messageData.data).join(', ') : 'N/A'}`);
-            // ---------------------------------------
+            console.log(`[WS DEBUG] Raw Msg Received - Channel: ${messageData.channel || 'N/A'}, DataKeys: ${messageData.data ? Object.keys(messageData.data).join(', ') : 'N/A'}`);
 
             // --- webData2 Processing ---
             if (messageData.channel === 'webData2' && messageData.data) {
-                 // console.log("[WS] Received webData2 Structure:", JSON.stringify(messageData.data, null, 2)); // Keep this commented unless needed
+                 console.log("[WS] !!! Received webData2 message successfully !!!");
+                 // console.log("[WS] Received webData2 Structure:", JSON.stringify(messageData.data, null, 2));
                  if (Array.isArray(messageData.data.assetCtxs)) {
                      let updatedCount = 0;
                      messageData.data.assetCtxs.forEach(ctx => {
-                         if (ctx && ctx.name) {
-                            assetContexts[ctx.name] = ctx; updatedCount++;
-                         } else { console.warn("[WS] Skipping asset context missing 'name':", ctx); }
+                         if (ctx && ctx.name) { assetContexts[ctx.name] = ctx; updatedCount++; }
+                         else { console.warn("[WS] Skipping asset context missing 'name':", ctx); }
                      });
-                     if (updatedCount > 0) {
-                          console.log(`[WS] Processed ${updatedCount} asset contexts.`);
-                          updateOverviewDisplay();
-                     }
-                 } else { /* ... error handling ... */ }
+                     if (updatedCount > 0) { updateOverviewDisplay(); }
+                 } else { console.error("[WS] webData2 received, but 'assetCtxs' is NOT an array:", messageData.data); /* ... */ }
             }
-            // --- Ticker Processing ---
-            else if (messageData.channel === 'ticker' && messageData.data) {
-                const coin = messageData.data.coin;
-                if (KEY_TICKERS.includes(coin)) {
-                    tickerData[coin] = messageData.data;
-                    updateTickerDisplay(coin, messageData.data);
-                }
-            }
-            // --- L2Book Processing ---
-            else if (messageData.channel === 'l2Book' && messageData.data?.coin === currentLogCoin) {
-                 addMessageToLog(event.data, 'log-l2');
-            }
-            // --- Trades Processing ---
-            else if (messageData.channel === 'trades' && messageData.data?.coin === currentLogCoin) {
-                 addMessageToLog(event.data, 'log-trade');
-            }
-            // --- ERROR Channel --- Added Explicit Handling
+            // --- Ticker Processing --- (Will not trigger as we didn't subscribe)
+            else if (messageData.channel === 'ticker' && messageData.data) { /* ... */ }
+            // --- L2Book / Trades Processing --- (Will not trigger)
+            else if (messageData.channel === 'l2Book' && messageData.data?.coin === currentLogCoin) { /* ... */ }
+            else if (messageData.channel === 'trades' && messageData.data?.coin === currentLogCoin) { /* ... */ }
+            // --- ERROR Channel ---
             else if (messageData.channel === 'error') {
                  console.error("[WS Server Error Received]:", messageData.data);
-                 // Display error in status?
-                 statusDiv.textContent = `Server Error: ${messageData.data.substring(0, 60)}...`;
+                 // Specifically check if the error is about webData2
+                 if (messageData.data.includes('webData2')) {
+                    statusDiv.textContent = `Server Error Subscribing (webData2): ${messageData.data.substring(0, 40)}...`;
+                 } else {
+                    statusDiv.textContent = `Server Error: ${messageData.data.substring(0, 60)}...`;
+                 }
                  statusDiv.className = 'status error';
             }
 
-        } catch (e) { /* ... error handling ... */ }
+        } catch (e) { console.error('[WS] Error processing message:', e, 'Raw data:', event.data); }
     });
 
-    socket.addEventListener('error', function (event) {
-        console.error('[WS] WebSocket Error Event:', event);
-        statusDiv.textContent = "Connection Error! Check console.";
-        statusDiv.className = 'status error';
-        if (overviewUpdateInterval) clearInterval(overviewUpdateInterval);
-    });
-    socket.addEventListener('close', function (event) {
-        console.log('[WS] Connection Closed.', event.code, event.reason);
-        statusDiv.textContent = "Disconnected. Reconnecting...";
-        statusDiv.className = 'status disconnected';
-        if (overviewUpdateInterval) clearInterval(overviewUpdateInterval);
-        socket = null; assetContexts = {}; tickerData = {}; // Clear data
-        setTimeout(connectWebSocket, 5000);
-    });
+    socket.addEventListener('error', function (event) { /* ... */ });
+    socket.addEventListener('close', function (event) { /* ... */ });
 }
 
-function checkOverviewDataReceived() { /* ... no changes ... */ }
-filterInput.addEventListener('input', function() { /* ... no changes ... */ });
-changeCoinBtn.addEventListener('click', function() { /* ... no changes ... */ });
+function checkOverviewDataReceived() { /* ... */ }
+filterInput.addEventListener('input', function() { /* ... */ });
+changeCoinBtn.addEventListener('click', function() { /* ... (This button won't change subscriptions now) ... */
+    // Maybe disable or change behavior in test mode? For now, just log.
+    console.log("[Control] Change Log Coin clicked - subscriptions are currently fixed for testing.");
+    // Optionally update display or provide feedback
+    // const newCoin = coinInput.value.trim().toUpperCase();
+    // if(newCoin) dataContainer.innerHTML = `<div class="message log-info" style="text-align: center; padding: 20px;">Subscriptions fixed for testing. Cannot change log coin to ${newCoin} now.</div>`;
+});
 
 // --- Initial Connection ---
 connectWebSocket();
