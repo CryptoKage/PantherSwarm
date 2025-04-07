@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperliquid Market Data - PantherSwarm</title>
+    <link rel="stylesheet" href="/PantherSwarm/style.css"> <!-- Link your existing CSS -->
+    <style>
+        body {
+            padding: 20px;
+        }
+        /* Style for input fields and controls container */
+        .controls {
+            background-color: #2a2a2a;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 15px; /* Spacing between elements */
+            align-items: center;
+        }
+        .controls label {
+            margin-right: 5px;
+            color: #ccc;
+        }
+        .controls input[type="text"] {
+            padding: 8px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #eee;
+            border-radius: 4px;
+        }
+        .controls button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .controls button:hover {
+            background-color: #0056b3;
+        }
 
+        #data-container {
+            background-color: #1a1a1a;
+            color: #00ff00;
+            border: 1px solid #333;
+            padding: 15px;
+            margin-top: 20px;
+            height: 500px;
+            overflow-y: scroll;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0.9em;
+        }
+         /* Add rule to hide messages that don't match filter */
+        #data-container .message.hidden {
+            display: none;
+        }
+
+        .status {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.connecting { background-color: #ffa500; color: black; }
+        .status.connected { background-color: #28a745; color: white; }
+        .status.error { background-color: #dc3545; color: white; }
+        .status.disconnected { background-color: #ffc107; color: black; }
+        .status.updating { background-color: #17a2b8; color: white; } /* New status for updating */
+
+
+        a.button-back {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 20px; /* Add space below */
+        }
+        a.button-back:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Hyperliquid Live Market Data</h1>
+    <a href="index.html" class="button-back">Back to Home</a>
+
+    <!-- Input Controls Section -->
+    <div class="controls">
+        <div>
+            <label for="filterInput">Filter Displayed Data:</label>
+            <input type="text" id="filterInput" placeholder="Type to filter...">
+        </div>
+        <div>
+            <label for="coinInput">Coin Symbol:</label>
+            <input type="text" id="coinInput" value="ETH" placeholder="e.g., BTC, SOL"> <!-- Default to ETH -->
+            <button id="changeCoinBtn">Change Coin</button>
+        </div>
+    </div>
+
+    <div id="status" class="status connecting">Connecting...</div>
+    <div id="data-container">
+        <!-- Live data will appear here -->
+    </div>
+
+    <script src="market-data.js"></script>
+
+</body>
+</html>
