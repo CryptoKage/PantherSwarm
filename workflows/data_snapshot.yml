@@ -2,8 +2,8 @@ name: Hyperliquid Data Snapshot
 
 on:
   schedule:
-    # Runs every 15 minutes
-    - cron: '*/15 * * * *'
+    # Runs every 6 hours (at the top of the hour: 00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
   workflow_dispatch: # Allows manual triggering from the Actions tab
 
 jobs:
@@ -23,16 +23,23 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install hyperliquid-python-sdk
+          # Install the SDK and asyncio (though asyncio is usually built-in)
+          pip install hyperliquid-python-sdk==0.3.0 # Pinning version for stability 
+          # Note: Check hyperliquid SDK repo for latest compatible versions if needed
 
       - name: Run snapshot script
-        run: python snapshot_collector.py # Your modified Python script
+        run: python snapshot_collector.py # Assumes script is in the root
 
       - name: Commit data file
         run: |
           git config --global user.name 'GitHub Action Bot'
           git config --global user.email 'action-bot@github.com'
           git add snapshot.json # Add the file created by your script
-          # Commit only if there are changes
-          git diff --staged --quiet || git commit -m "Update data snapshot"
-          git push
+          # Commit only if the snapshot file actually changed
+          if ! git diff --staged --quiet; then
+            git commit -m "Update ETH data snapshot"
+            git push
+          else
+            echo "No changes to snapshot.json detected."
+          fi
+        # Optional: Add error handling for commit step if needed
