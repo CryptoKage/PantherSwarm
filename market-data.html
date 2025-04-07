@@ -4,14 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyperliquid Market Data - PantherSwarm</title>
-    <!-- Link the NEW style.css -->
     <link rel="stylesheet" href="/PantherSwarm/style.css">
-    <!-- Link Google Fonts if needed (already in index.html, good practice here too) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Add specific style for ticker display */
+        .key-tickers-container { background-color: #111111; border: 1px solid #1a4c7f; padding: 15px; border-radius: 5px; }
+        .key-tickers-container h3 { margin-top: 0; margin-bottom: 10px; color: #33A1FF; border-bottom: 1px solid #2266aa; padding-bottom: 5px; font-size: 1.1em; }
+        .ticker-item { display: flex; justify-content: space-between; padding: 4px 2px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95em; border-bottom: 1px dotted #1a4c7f; }
+        .ticker-item:last-child { border-bottom: none; }
+        .ticker-item .coin { font-weight: bold; color: #dddddd; }
+        .ticker-item .price { color: #ffffff; font-weight: bold; }
+        .ticker-item .change { padding-left: 10px; }
+        .ticker-item .change.positive { color: #39ff14; }
+        .ticker-item .change.negative { color: #ff4444; }
+    </style>
 </head>
-<body id="market-data-page"> <!-- Added ID for potential specific body styles -->
+<body id="market-data-page">
 
     <a href="index.html" class="button-back">Back to Home</a>
     <div id="status" class="status connecting">Connecting...</div>
@@ -20,25 +30,28 @@
 
         <!-- Left Column: Controls and Raw Data -->
         <div class="main-content">
+            <!-- ... Controls div ... -->
             <div class="controls">
-                <div>
-                    <label for="filterInput">Filter Log:</label>
-                    <input type="text" id="filterInput" placeholder="Filter raw log...">
-                </div>
-                <div>
-                    <label for="coinInput">Log Coin:</label>
-                    <input type="text" id="coinInput" value="ETH" placeholder="e.g., BTC, SOL">
-                    <button id="changeCoinBtn">Change Log Coin</button>
-                </div>
+                <div> <label for="filterInput">Filter Log:</label> <input type="text" id="filterInput" placeholder="Filter raw log..."> </div>
+                <div> <label for="coinInput">Log Coin:</label> <input type="text" id="coinInput" value="ETH" placeholder="e.g., BTC, SOL"> <button id="changeCoinBtn">Change Log Coin</button> </div>
             </div>
             <div id="data-container">
-                <!-- Formatted log messages will appear here -->
-                 <div class="message log-info" style="text-align: center; padding: 20px;">Connecting and waiting for data...</div>
+                <div class="message log-info" style="text-align: center; padding: 20px;">Connecting and waiting for data...</div>
             </div>
         </div>
 
         <!-- Right Column: Overview Grids -->
         <div class="overview-sidebar">
+            <!-- Key Tickers (Add near top) -->
+            <div class="key-tickers-container" id="key-tickers">
+                <h3>Key Tickers</h3>
+                <div id="ticker-BTC"><span class="coin">BTC:</span> <span class="price">Loading...</span> <span class="change">--%</span></div>
+                <div id="ticker-ETH"><span class="coin">ETH:</span> <span class="price">Loading...</span> <span class="change">--%</span></div>
+                <div id="ticker-SOL"><span class="coin">SOL:</span> <span class="price">Loading...</span> <span class="change">--%</span></div>
+                <!-- Add more divs like this if you want more key tickers -->
+            </div>
+
+            <!-- Existing Grids + New Gainers/Losers -->
             <div class="overview-grid" id="funding-positive-grid">
                 <h3>Top 5 Positive Funding</h3>
                 <ul id="funding-positive-list"><li class="placeholder">Loading...</li></ul>
@@ -47,15 +60,24 @@
                 <h3>Top 5 Negative Funding</h3>
                 <ul id="funding-negative-list"><li class="placeholder">Loading...</li></ul>
             </div>
-             <div class="overview-grid" id="oi-grid">
-                <!-- Title might be updated by JS -->
-                <h3>Top 5 Volume (OI Placeholder)</h3>
-                <ul id="oi-list"><li class="placeholder">Loading...</li></ul>
+             <div class="overview-grid" id="gainers-grid"> <!-- NEW -->
+                <h3>Top 5 Gainers (24h)</h3>
+                <ul id="gainers-list"><li class="placeholder">Loading...</li></ul>
             </div>
-            <div class="overview-grid" id="volume-grid">
+             <div class="overview-grid" id="losers-grid"> <!-- NEW -->
+                <h3>Top 5 Losers (24h)</h3>
+                <ul id="losers-list"><li class="placeholder">Loading...</li></ul>
+            </div>
+             <div class="overview-grid" id="volume-grid">
                 <h3>Top 5 Volume (24h USD)</h3>
                 <ul id="volume-list"><li class="placeholder">Loading...</li></ul>
             </div>
+            <!-- Keep OI placeholder or remove -->
+             <div class="overview-grid" id="oi-grid">
+                <h3>Top 5 Volume (OI Placeholder)</h3>
+                <ul id="oi-list"><li class="placeholder">Loading...</li></ul>
+            </div>
+
         </div>
 
     </div> <!-- End layout-container -->
