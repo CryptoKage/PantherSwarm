@@ -1,0 +1,48 @@
+name: Hyperliquid Market Snapshot
+
+on:
+  schedule:
+    # Runs every 6 hours (at 00:00, 06:00, 12:00, 18:00 UTC etc.)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Need permission to write back to the repo
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Or your preferred Python version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Pinning version for stability in Actions
+          pip install hyperliquid-python-sdk==0.3.0 
+          # Note: Check hyperliquid SDK repo for latest compatible versions if needed
+
+      - name: Run snapshot script
+        # Use timeout for safety in case the API call hangs
+        timeout-minutes: 3 
+        run: python snapshot_collector.py # Assumes script is in the root
+
+      - name: Commit data file
+        run: |
+          git config --global user.name 'GitHub Action Bot'
+          git config --global user.email 'action-bot@github.com'
+          # Use the new filename here
+          git add market_snapshot.json 
+          # Commit only if the snapshot file actually changed
+          if ! git diff --staged --quiet; then
+            # Use a relevant commit message
+            git commit -m "Update market snapshot data" 
+            git push
+          else
+            echo "No changes to market_snapshot.json detected."
+          fi
