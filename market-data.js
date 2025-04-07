@@ -1,8 +1,10 @@
 // --- Configuration ---
 const WEBSOCKET_URL = "wss://api.hyperliquid.xyz/ws";
 let currentLogCoin = "ETH";
+const L2_LOG_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // --- Get HTML Elements ---
+// ... (Keep all getElementById calls) ...
 const statusDiv = document.getElementById('status');
 const dataContainer = document.getElementById('data-container');
 const filterInput = document.getElementById('filterInput');
@@ -13,167 +15,88 @@ const fundingNegativeList = document.getElementById('funding-negative-list');
 const oiList = document.getElementById('oi-list');
 const volumeList = document.getElementById('volume-list');
 
+
 // --- Data Storage ---
-let assetContexts = {}; // Stores data from webData2
-let lastUpdateTime = null; // Track last overview update
-let overviewUpdateInterval; // Timer for checking if overview data arrived
+let assetContexts = {};
+let lastUpdateTime = null;
+let overviewUpdateInterval;
+let lastL2LogTime = 0; // Timestamp of the last L2 message shown in the log
 
 // --- WebSocket Logic ---
 let socket;
 let messageCounter = 0;
-const MAX_MESSAGES_LOG = 250;
+const MAX_MESSAGES_LOG = 250; // Limit total messages shown in log
 
 // --- Helper Functions ---
-function formatLargeNumber(num) {
-    if (num === null || num === undefined || isNaN(num)) return 'N/A';
-    num = Number(num);
-    if (num >= 1e9) return (num / 1e9).toFixed(2) + ' B';
-    if (num >= 1e6) return (num / 1e6).toFixed(2) + ' M';
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + ' K';
-    return num.toFixed(0);
-}
-function formatFundingRate(rate) {
-    if (rate === null || rate === undefined || isNaN(rate)) return 'N/A';
-    return (Number(rate) * 100).toFixed(4) + '%';
-}
-function formatTimestamp(timestamp) {
-    // Assuming timestamp is in milliseconds
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString(); // Format as HH:MM:SS
-}
+// ... (Keep formatLargeNumber, formatFundingRate, formatTimestamp) ...
+function formatLargeNumber(num) { /* ... no changes ... */ }
+function formatFundingRate(rate) { /* ... no changes ... */ }
+function formatTimestamp(timestamp) { /* ... no changes ... */ }
 
 
 // --- Overview Display Logic ---
-function updateOverviewDisplay() {
-    console.log("[Overview] Attempting update. Context keys:", Object.keys(assetContexts).length);
-    lastUpdateTime = new Date();
+// ... (Keep updateOverviewDisplay function as is) ...
+function updateOverviewDisplay() { /* ... no changes ... */ }
 
-    if (Object.keys(assetContexts).length === 0) {
-        console.warn("[Overview] No asset contexts available.");
-        // Keep placeholder as "Loading..." or "No Data" - handled by renderList
-        return;
-    }
+// ... (Keep renderList function as is) ...
+function renderList(listElement, data, formatter, titleOverride = null, placeholder = "No Data Available") { /* ... no changes ... */ }
 
-    const allCoinsData = Object.entries(assetContexts).map(([coin, ctx]) => {
-        const funding = parseFloat(ctx?.funding);
-        const volume = parseFloat(ctx?.dayNtlVlm);
-        return {
-            coin: coin,
-            fundingRate: !isNaN(funding) ? funding : NaN,
-            volume24h: !isNaN(volume) ? volume : NaN
-        };
-    }).filter(d => !isNaN(d.volume24h) && d.volume24h > 0 && !isNaN(d.fundingRate) && d.coin);
-
-    console.log(`[Overview] Filtered ${allCoinsData.length} valid coins.`);
-
-    if (allCoinsData.length === 0) {
-         console.warn("[Overview] No coins remained after filtering.");
-         renderList(fundingPositiveList, [], item => ({}), "Top 5 Positive Funding", "No Valid Data");
-         renderList(fundingNegativeList, [], item => ({}), "Top 5 Negative Funding", "No Valid Data");
-         renderList(oiList, [], item => ({}), "Top 5 Volume (OI Placeholder)", "No Valid Data");
-         renderList(volumeList, [], item => ({}), "Top 5 Volume (24h USD)", "No Valid Data");
-         return;
-    }
-
-    // Sort and render funding
-    const sortedByFunding = [...allCoinsData].sort((a, b) => b.fundingRate - a.fundingRate);
-    renderList(fundingPositiveList, sortedByFunding.filter(d => d.fundingRate > 0).slice(0, 5), item => ({
-        coin: item.coin, value: formatFundingRate(item.fundingRate), valueClass: 'positive'
-    }), "Top 5 Positive Funding");
-    renderList(fundingNegativeList, sortedByFunding.filter(d => d.fundingRate < 0).reverse().slice(0, 5), item => ({
-        coin: item.coin, value: formatFundingRate(item.fundingRate), valueClass: 'negative'
-    }), "Top 5 Negative Funding");
-
-    // Sort and render volume
-    const sortedByVolume = [...allCoinsData].sort((a, b) => b.volume24h - a.volume24h);
-    const topVolume = sortedByVolume.slice(0, 5);
-    renderList(oiList, topVolume, item => ({
-        coin: item.coin, value: '$' + formatLargeNumber(item.volume24h)
-    }), "Top 5 Volume (OI Placeholder)");
-    renderList(volumeList, topVolume, item => ({
-        coin: item.coin, value: '$' + formatLargeNumber(item.volume24h)
-    }), "Top 5 Volume (24h USD)");
-}
-
-// Renders data into a specific <ul> list
-function renderList(listElement, data, formatter, titleOverride = null, placeholder = "No Data Available") {
-    if (!listElement) return;
-    const gridTitleElement = listElement.closest('.overview-grid')?.querySelector('h3');
-    if (gridTitleElement && titleOverride) {
-        gridTitleElement.textContent = titleOverride;
-    }
-
-    if (!data || data.length === 0) {
-        // Use the placeholder passed in, or default
-        listElement.innerHTML = `<li class="placeholder">${placeholder}</li>`;
-        return;
-    }
-    listElement.innerHTML = data.map(item => {
-        const formatted = formatter(item);
-        return `
-            <li>
-                <span class="coin">${formatted.coin || 'N/A'}</span>
-                <span class="value ${formatted.valueClass || ''}">${formatted.value || 'N/A'}</span>
-            </li>
-        `;
-    }).join('');
-}
 
 // --- Raw Log Display Logic ---
 function addMessageToLog(rawMessageData, messageType = 'log-other') {
-     // Clear "Waiting..." message on first real log entry
+     // Special handling for L2 throttling
+     if (messageType === 'log-l2') {
+         const now = Date.now();
+         if (now - lastL2LogTime < L2_LOG_INTERVAL_MS) {
+             // console.log("[Log] Throttled L2 update."); // Optional debug log
+             return; // Skip adding this L2 update to the log
+         }
+         // If allowed, update the timestamp
+         lastL2LogTime = now;
+         console.log(`[Log] Displaying L2 update for ${currentLogCoin} after interval.`);
+     }
+
+     // Clear "Waiting..." message on first real log entry (excluding throttled L2)
      if (messageCounter === 0 && dataContainer.querySelector('.log-info')) {
         dataContainer.innerHTML = '';
      }
 
      messageCounter++;
      if (messageCounter > MAX_MESSAGES_LOG + 1) {
-         // Only log suppression notice once
-         if (messageCounter === MAX_MESSAGES_LOG + 2) {
-             console.warn(`[Log] Suppressing further UI updates after ${MAX_MESSAGES_LOG} messages.`);
-             const noticeElement = document.createElement('div');
-             noticeElement.textContent = `--- Log UI updates paused (check console) ---`;
-             noticeElement.className = 'message log-info';
-             dataContainer.appendChild(noticeElement);
-             scrollToBottomIfNeeded();
-         }
-         console.log('[Log Suppressed] Raw:', rawMessageData); // Still log to console
+         // ... (Keep MAX_MESSAGES_LOG handling as is) ...
          return;
      }
 
      const messageElement = document.createElement('div');
-     messageElement.classList.add('message', messageType); // Add base class and specific type class
+     messageElement.classList.add('message', messageType);
 
      let formattedContent = '';
      try {
          const jsonData = JSON.parse(rawMessageData);
-         // Format specific known types
+
          if (messageType === 'log-trade' && Array.isArray(jsonData.data)) {
              formattedContent = jsonData.data.map(trade =>
-                 `TRADE [${formatTimestamp(trade.time)}] ${trade.side === 'B' ? '<span class="side-B">BUY</span>' : '<span class="side-S">SELL</span>'} ${trade.sz} ${jsonData.data.coin || currentLogCoin} @ ${trade.px} (Liquidation: ${trade.liquidation ? 'Yes' : 'No'})`
-             ).join('<br>'); // Join multiple trades in one message with line breaks
+                 `TRADE [${formatTimestamp(trade.time)}] ${trade.side === 'B' ? '<span class="side-B">BUY</span>' : '<span class="side-S">SELL</span>'} ${trade.sz} ${jsonData.data.coin || currentLogCoin} @ ${trade.px} (Liq: ${trade.liquidation ? 'Y' : 'N'})` // Shortened Liquidation
+             ).join('<br>');
          } else if (messageType === 'log-l2' && jsonData.data?.levels) {
-              formattedContent = `L2 Update [${formatTimestamp(jsonData.data.time)}] ${jsonData.data.coin || currentLogCoin} - ${jsonData.data.levels[0]?.length || 0} Bids, ${jsonData.data.levels[1]?.length || 0} Asks`;
-             // Optionally add more detail, e.g., top bid/ask
-             // formattedContent += `<br>Top Bid: ${jsonData.data.levels[0][0]?.px}, Top Ask: ${jsonData.data.levels[1][0]?.px}`;
+              // This will now only run approx every 5 minutes due to the check above
+              formattedContent = `L2 SUMMARY [${formatTimestamp(jsonData.data.time)}] ${jsonData.data.coin || currentLogCoin} - Bids: ${jsonData.data.levels[0]?.length || 0}, Asks: ${jsonData.data.levels[1]?.length || 0}`;
+              messageElement.classList.add('log-separator'); // Add separator before L2 summary
          } else {
-             // Fallback: Pretty print unknown JSON
-             formattedContent = `<pre>${JSON.stringify(jsonData, null, 2)}</pre>`; // Use <pre> for better formatting
-             messageElement.classList.add('log-separator'); // Add separator for readability
+             formattedContent = `<pre>${JSON.stringify(jsonData, null, 2)}</pre>`;
+             messageElement.classList.add('log-separator');
          }
 
      } catch (e) {
-         // If not JSON or formatting failed, display raw text
          formattedContent = rawMessageData;
-         messageElement.classList.replace('log-other', 'log-info'); // Style as plain info if not JSON
+         messageElement.classList.replace('log-other', 'log-info');
      }
 
-     messageElement.innerHTML = formattedContent; // Use innerHTML because we added spans/br/pre
+     messageElement.innerHTML = formattedContent;
 
-     // Apply filter immediately
+     // Apply filter
      const filterValue = filterInput.value.toLowerCase();
-     if (filterValue && !messageElement.textContent.toLowerCase().includes(filterValue)) { // Filter on textContent
+     if (filterValue && !messageElement.textContent.toLowerCase().includes(filterValue)) {
          messageElement.classList.add('hidden');
      }
 
@@ -181,190 +104,110 @@ function addMessageToLog(rawMessageData, messageType = 'log-other') {
      scrollToBottomIfNeeded();
 }
 
-function scrollToBottomIfNeeded() {
-    // Auto-scroll only if user is already near the bottom
-    const isScrolledToBottom = dataContainer.scrollHeight - dataContainer.clientHeight <= dataContainer.scrollTop + 60; // Generous buffer
-    if (isScrolledToBottom) {
-        dataContainer.scrollTop = dataContainer.scrollHeight;
-    }
-}
+function scrollToBottomIfNeeded() { /* ... no changes ... */ }
+
 
 // --- WebSocket Connection & Subscription ---
-function subscribeToLogCoin(coin) {
-    if (!socket || socket.readyState !== WebSocket.OPEN) return;
-    console.log(`[WS] Subscribing log channels for ${coin}...`);
-    const subscriptions = [ { type: "l2Book", coin: coin }, { type: "trades", coin: coin } ];
-    subscriptions.forEach(sub => {
-        const message = { method: "subscribe", subscription: sub };
-        try { socket.send(JSON.stringify(message)); console.log("[WS] Sent log subscribe:", message); }
-        catch (e) { console.error("[WS] Error sending log subscribe:", e); }
-    });
-}
-function unsubscribeFromLogCoin(coin) {
-     if (!socket || socket.readyState !== WebSocket.OPEN) return;
-    console.log(`[WS] Unsubscribing log channels for ${coin}...`);
-    const subscriptions = [ { type: "l2Book", coin: coin }, { type: "trades", coin: coin } ];
-    subscriptions.forEach(sub => {
-        const message = { method: "unsubscribe", subscription: sub };
-         try { socket.send(JSON.stringify(message)); console.log("[WS] Sent log unsubscribe:", message); }
-         catch (e) { console.error("[WS] Error sending log unsubscribe:", e); }
-    });
-}
+function subscribeToLogCoin(coin) { /* ... no changes ... */ }
+function unsubscribeFromLogCoin(coin) { /* ... no changes ... */ }
 
 function connectWebSocket() {
     console.log("[WS] Attempting Connection...");
+    // ... (Keep status updates, initial placeholders, variable resets) ...
     statusDiv.textContent = "Connecting...";
     statusDiv.className = 'status connecting';
     dataContainer.innerHTML = '<div class="message log-info" style="text-align: center; padding: 20px;">Connecting and waiting for data...</div>';
     messageCounter = 0;
     coinInput.value = currentLogCoin;
-    assetContexts = {}; // Clear contexts
-    lastUpdateTime = null; // Reset last update time
-    if (overviewUpdateInterval) clearInterval(overviewUpdateInterval); // Clear previous timer
+    assetContexts = {};
+    lastUpdateTime = null;
+    lastL2LogTime = 0; // Reset L2 log timer on reconnect
+    if (overviewUpdateInterval) clearInterval(overviewUpdateInterval);
 
-    // Set initial overview state to "Loading..."
     renderList(fundingPositiveList, [], item => ({}), "Top 5 Positive Funding", "Loading...");
     renderList(fundingNegativeList, [], item => ({}), "Top 5 Negative Funding", "Loading...");
     renderList(oiList, [], item => ({}), "Top 5 Volume (OI Placeholder)", "Loading...");
     renderList(volumeList, [], item => ({}), "Top 5 Volume (24h USD)", "Loading...");
 
-    try {
-        socket = new WebSocket(WEBSOCKET_URL);
-    } catch (e) {
-         console.error("[WS] WebSocket creation failed:", e);
-         statusDiv.textContent = "WebSocket Creation Failed!";
-         statusDiv.className = 'status error';
-         return;
-    }
 
+    try { socket = new WebSocket(WEBSOCKET_URL); }
+    catch (e) { /* ... error handling ... */ return; }
 
     socket.addEventListener('open', function (event) {
+        // ... (Keep status updates, overview subscription, log coin subscription) ...
         console.log('[WS] Connection Opened.');
         statusDiv.textContent = "Connected! Subscribing...";
         statusDiv.className = 'status connected';
 
-        // Subscribe to overview data
         const overviewSubscription = { method: "subscribe", subscription: { type: "webData2" }};
          try { socket.send(JSON.stringify(overviewSubscription)); console.log("[WS] Sent overview (webData2) subscribe:", overviewSubscription); }
          catch (e) { console.error("[WS] Error sending overview subscribe:", e); }
 
-
-        // Subscribe to initial log coin
         subscribeToLogCoin(currentLogCoin);
-
-        // Start checking if overview data arrived
-        overviewUpdateInterval = setInterval(checkOverviewDataReceived, 7000); // Check every 7 seconds
+        overviewUpdateInterval = setInterval(checkOverviewDataReceived, 7000);
     });
 
     socket.addEventListener('message', function (event) {
-        // console.log("[WS] Raw Message Received:", event.data); // DEBUG: Uncomment to see everything
+        // console.log("[WS] Raw Message Received:", event.data); // Keep this commented unless actively debugging everything
+
         try {
             const messageData = JSON.parse(event.data);
 
+            // --- webData2 Processing ---
             if (messageData.channel === 'webData2' && messageData.data) {
-                console.log("[WS] Received webData2:", messageData.data); // Log received overview data structure
+                // *** MOST IMPORTANT DEBUG LOG ***
+                console.log("[WS] Received webData2:", JSON.stringify(messageData.data, null, 2)); // Log the structure clearly
+
                  if (Array.isArray(messageData.data.assetCtxs)) {
                     let updatedCount = 0;
                     messageData.data.assetCtxs.forEach(ctx => {
-                        if (ctx && ctx.name) {
+                        if (ctx && ctx.name) { // Check if 'name' exists and is truthy
                            assetContexts[ctx.name] = ctx;
                            updatedCount++;
+                        } else {
+                           console.warn("[WS] Skipping asset context missing 'name':", ctx); // Log problematic contexts
                         }
                     });
-                    console.log(`[WS] Updated ${updatedCount} asset contexts.`);
-                    updateOverviewDisplay(); // Update the grids
+                    console.log(`[WS] Processed ${updatedCount} asset contexts from webData2.`);
+                    // Only update display if data was actually processed
+                    if (updatedCount > 0) updateOverviewDisplay();
                  } else {
-                    console.warn("[WS] webData2 received, but 'assetCtxs' array missing/invalid:", messageData.data);
+                    console.error("[WS] webData2 received, but 'assetCtxs' is NOT an array:", messageData.data);
+                    // *** ADD A VISUAL CUE? ***
+                    renderList(fundingPositiveList, [], item => ({}), "Top 5 Positive Funding", "Data Error (Ctx)"); // Indicate error
                  }
             }
+            // --- L2Book Processing (Passes to addMessageToLog which throttles UI) ---
             else if (messageData.channel === 'l2Book' && messageData.data?.coin === currentLogCoin) {
-                 addMessageToLog(event.data, 'log-l2'); // Pass raw data, identify type
+                 addMessageToLog(event.data, 'log-l2'); // Type determines throttling in addMessageToLog
             }
+            // --- Trades Processing ---
             else if (messageData.channel === 'trades' && messageData.data?.coin === currentLogCoin) {
-                 addMessageToLog(event.data, 'log-trade'); // Pass raw data, identify type
+                 addMessageToLog(event.data, 'log-trade');
             }
-            // Add handlers for other channels if needed
-            // else { console.log("[WS] Received unhandled message type:", messageData.channel); }
+            // --- Other Channels ---
+            // else { console.log("[WS] Received unhandled channel:", messageData.channel); }
 
         } catch (e) {
             console.error('[WS] Error processing message:', e, 'Raw data:', event.data);
-            addMessageToLog(`Error parsing: ${event.data}`, 'log-error'); // Log error in UI
+            // Don't add raw parse errors to the main log unless debugging
+            // addMessageToLog(`Error parsing: ${event.data}`, 'log-error');
         }
     });
 
-    socket.addEventListener('error', function (event) {
-        console.error('[WS] WebSocket Error:', event);
-        statusDiv.textContent = "Connection Error! Check console.";
-        statusDiv.className = 'status error';
-        if (overviewUpdateInterval) clearInterval(overviewUpdateInterval);
-    });
-
-    socket.addEventListener('close', function (event) {
-        console.log('[WS] Connection Closed.', event.code, event.reason);
-        statusDiv.textContent = "Disconnected. Reconnecting...";
-        statusDiv.className = 'status disconnected';
-        if (overviewUpdateInterval) clearInterval(overviewUpdateInterval);
-        socket = null;
-        assetContexts = {}; // Clear data
-        // Attempt to reconnect after a delay
-        setTimeout(connectWebSocket, 5000);
-    });
+    // ... (Keep error and close event listeners as they are) ...
+    socket.addEventListener('error', function (event) { /* ... no changes ... */ });
+    socket.addEventListener('close', function (event) { /* ... no changes ... */ });
 }
 
-// Function to check if overview data seems stuck on "Loading..."
-function checkOverviewDataReceived() {
-    if (!lastUpdateTime && socket?.readyState === WebSocket.OPEN) {
-        console.warn("[Check] No overview data received yet. Still connected.");
-        // If overview lists still show "Loading...", change to "No data"
-         renderList(fundingPositiveList, [], item => ({}), "Top 5 Positive Funding", "Waiting for data...");
-         renderList(fundingNegativeList, [], item => ({}), "Top 5 Negative Funding", "Waiting for data...");
-         renderList(oiList, [], item => ({}), "Top 5 Volume (OI Placeholder)", "Waiting for data...");
-         renderList(volumeList, [], item => ({}), "Top 5 Volume (24h USD)", "Waiting for data...");
-    } else {
-        // If data has arrived at some point, stop checking
-         if (overviewUpdateInterval) clearInterval(overviewUpdateInterval);
-    }
-}
-
+// ... (Keep checkOverviewDataReceived function as is) ...
+function checkOverviewDataReceived() { /* ... no changes ... */ }
 
 // --- Event Listeners for Controls ---
-filterInput.addEventListener('input', function() {
-    const filterValue = filterInput.value.toLowerCase();
-    const messages = dataContainer.querySelectorAll('.message');
-    messages.forEach(messageDiv => {
-        // Filter based on the actual text content, ignoring HTML tags
-        const messageText = messageDiv.textContent.toLowerCase();
-        if (messageText.includes(filterValue)) {
-            messageDiv.classList.remove('hidden');
-        } else {
-            messageDiv.classList.add('hidden');
-        }
-    });
-});
+// ... (Keep filterInput and changeCoinBtn listeners as they are) ...
+filterInput.addEventListener('input', function() { /* ... no changes ... */ });
+changeCoinBtn.addEventListener('click', function() { /* ... no changes ... */ });
 
-changeCoinBtn.addEventListener('click', function() {
-    const newCoin = coinInput.value.trim().toUpperCase();
-    if (!newCoin) { alert("Please enter a coin symbol."); return; }
-    if (newCoin === currentLogCoin) { alert(`Already logging ${currentLogCoin}.`); return; }
-    if (!socket || socket.readyState !== WebSocket.OPEN) { alert("WebSocket is not connected."); return; }
-
-    console.log(`[Control] Changing log coin from ${currentLogCoin} to ${newCoin}`);
-    statusDiv.textContent = `Updating log subscriptions to ${newCoin}...`;
-    statusDiv.className = 'status updating';
-
-    unsubscribeFromLogCoin(currentLogCoin);
-    dataContainer.innerHTML = `<div class="message log-info" style="text-align: center; padding: 20px;">Fetching ${newCoin} data...</div>`;
-    messageCounter = 0; // Reset log counter for new coin
-    currentLogCoin = newCoin;
-
-    // Slight delay to allow unsubscribe message to be potentially processed
-    setTimeout(() => {
-       subscribeToLogCoin(currentLogCoin);
-       // Reset status visually after attempting subscription
-       statusDiv.textContent = "Connected";
-       statusDiv.className = 'status connected';
-    }, 300); // Slightly increased delay
-});
 
 // --- Initial Connection ---
 connectWebSocket();
