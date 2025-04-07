@@ -1,130 +1,149 @@
-import asyncio
 import json
 import sys
 import os
+import time
+from datetime import datetime, timezone
 from hyperliquid.info import Info
-from hyperliquid.utils.signing import user_lookup
 
 # --- Configuration ---
-ASSET = "ETH"
-OUTPUT_FILENAME = "snapshot.json"
-# How long to wait for the first message before giving up (in seconds)
-TIMEOUT_SECONDS = 20 
+OUTPUT_FILENAME = "market_snapshot.json"
+NUM_ASSETS = 5 # How many top/bottom assets to show for each category
 # ---
 
-# Use a placeholder address (required by SDK structure, but no private key needed)
-# Using a zero address often works for public feeds.
-PLACEHOLDER_ADDRESS = "0x0000000000000000000000000000000000000000"
-lookup = user_lookup(PLACEHOLDER_ADDRESS)
-agent_address = lookup["hyperliquid_address"]
-
-# Shared variable to store the received message
-received_data = None
-# Use asyncio.Event to signal when data is received
-data_received_event = asyncio.Event()
-
-async def handle_public_message(event: any):
-    """Callback function to handle incoming WebSocket messages."""
-    global received_data
-    print(f"Received raw data snippet: {str(event)[:100]}...") # Log snippet
-    # We expect the L2 book data structure. Check if it looks right.
-    # Adjust this check based on the actual structure you see if needed.
-    if isinstance(event, dict) and event.get("channel") == "l2Book" and event.get("data"):
-        print(f"Captured {ASSET} L2 Book data.")
-        received_data = event # Store the entire message object
-        data_received_event.set() # Signal that we got the data
-    else:
-        # This might receive other message types first (like confirmations)
-        print(f"Received non-target message type or structure: {type(event)}")
-
-
-async def main():
-    """Connects, subscribes, waits for one message, saves it, and disconnects."""
-    global received_data
-
-    print(f"Attempting to get snapshot for {ASSET}...")
-    # The Info class is generally used for public data websockets
-    info = Info(skip_ws=True) # Initialize without auto-connecting WebSocket yet
-
-    # Define the subscription message for L2 Order Book data
-    subscription_message = {
-        "method": "subscribe",
-        "subscription": {"type": "l2Book", "coin": ASSET},
-    }
-
+def format_rate(rate_str):
+    """Converts rate string to float, handling potential errors."""
     try:
-        # Manually start the WebSocket connection process
-        await info.start_websocket(handle_public_message)
-        print("WebSocket connection initiated...")
+        return float(rate_str)
+    except (ValueError, TypeError):
+        return None # Return None if conversion fails
 
-        # Ensure the connection is likely ready before subscribing
-        # info.ws_manager.ws should exist if connection started successfully
-        # Adding a small explicit wait can help reliability in Actions
-        await asyncio.sleep(3) 
+def format_oi(oi_str):
+    """Converts open interest string to float, handling potential errors."""
+    try:
+        # OI is often in USD value
+        return float(oi_str)
+    except (ValueError, TypeError):
+        return None
 
-        if not info.ws_manager or not info.ws_manager.ws:
-             print("WebSocket connection failed to establish.")
-             sys.exit(1) # Exit with error code
+def calculate_price_change(current_price_str, prev_price_str):
+    """Calculates percentage price change, handling errors."""
+    try:
+        current_price = float(current_price_str)
+        prev_price = float(prev_price_str)
+        if prev_price is None or current_price is None or prev_price == 0:
+            return None # Cannot calculate change
+        return ((current_price / prev_price) - 1) * 100
+    except (ValueError, TypeError, ZeroDivisionError):
+        return None
 
-        # Send the subscription message
-        print(f"Sending subscription request: {subscription_message}")
-        await info.ws_manager.send_message(subscription_message)
+def get_market_snapshot():
+    """Fetches market data, processes it, and returns a structured snapshot."""
+    print("Attempting to fetch market metadata...")
+    try:
+        # Initialize the Info class (no WebSocket needed for meta)
+        info = Info(skip_ws=True) 
+        
+        # Fetch meta data for all assets
+        # This method returns a list of dictionaries, one for each asset's context
+        # And a second list containing general metadata for each asset
+        asset_contexts, meta_data_list = info.meta_and_asset_ctxs()
+        
+        if not meta_data_list or not asset_contexts:
+            print("Error: Received empty data from meta_and_asset_ctxs()")
+            return None
+            
+        # Combine the data - assumes the lists correspond by index
+        # We need fields like name, funding, OI, current price, previous price
+        all_assets_data = []
+        # Create a lookup map from context name to context data
+        context_map = {ctx['name']: ctx for ctx in asset_contexts}
 
-        # Wait for the data_received_event to be set, with a timeout
-        print(f"Waiting for {ASSET} L2 book data (max {TIMEOUT_SECONDS} seconds)...")
-        try:
-            await asyncio.wait_for(data_received_event.wait(), timeout=TIMEOUT_SECONDS)
-        except asyncio.TimeoutError:
-            print("Timeout: Did not receive the target L2 book data in time.")
-            # Decide if you want to exit with error or save empty/partial data
-            # For this example, we'll exit with error if timeout occurs
-            await info.stop_websocket()
-            sys.exit(1) # Exit with error code
-
-        # If we received data:
-        if received_data:
-            print(f"Data captured successfully. Saving to {OUTPUT_FILENAME}...")
-            try:
-                # Ensure the directory exists (useful if running locally too)
-                os.makedirs(os.path.dirname(OUTPUT_FILENAME) or '.', exist_ok=True) 
+        for meta in meta_data_list:
+            asset_name = meta.get('name')
+            if not asset_name:
+                continue # Skip if no name
                 
-                with open(OUTPUT_FILENAME, 'w') as f:
-                    json.dump(received_data, f, indent=2)
-                print(f"Snapshot saved to {OUTPUT_FILENAME}")
-            except Exception as e:
-                print(f"Error saving data to file: {e}")
-                # Decide if this should be a fatal error
-                # sys.exit(1)
-        else:
-            # This case might happen if the event was set but data somehow wasn't stored
-            print("Data received event was set, but no data was stored. Strange.")
-            # sys.exit(1) # Optional: Exit with error
+            context = context_map.get(asset_name)
+            if not context:
+                print(f"Warning: No context found for asset {asset_name}")
+                continue # Skip if no matching context
+
+            funding_rate = format_rate(context.get('fundingRate')) # Use context funding rate
+            open_interest = format_oi(context.get('openInterest')) # Use context OI
+            mark_price = context.get('markPx') # Current price estimate
+            prev_day_price = meta.get('prevDayPx') # Previous day price from meta
+
+            price_change_pct = calculate_price_change(mark_price, prev_day_price)
+
+            all_assets_data.append({
+                "asset": asset_name,
+                "funding_rate": funding_rate,
+                "open_interest_usd": open_interest,
+                "price_change_pct_24h": price_change_pct,
+                "mark_price": format_rate(mark_price) # Store current price too
+            })
+
+        print(f"Processed data for {len(all_assets_data)} assets.")
+
+        # --- Filter and Sort ---
+        
+        # Funding Rates (filter out None values before sorting)
+        valid_funding = [a for a in all_assets_data if a.get('funding_rate') is not None]
+        valid_funding.sort(key=lambda x: x['funding_rate'], reverse=True)
+        top_funding = [{"asset": a['asset'], "rate": a['funding_rate']} for a in valid_funding[:NUM_ASSETS]]
+        bottom_funding = [{"asset": a['asset'], "rate": a['funding_rate']} for a in valid_funding[-NUM_ASSETS:][::-1]] # Last N, reversed for lowest first
+
+        # Open Interest (filter out None values)
+        valid_oi = [a for a in all_assets_data if a.get('open_interest_usd') is not None]
+        valid_oi.sort(key=lambda x: x['open_interest_usd'], reverse=True)
+        top_oi = [{"asset": a['asset'], "oi_usd": a['open_interest_usd']} for a in valid_oi[:NUM_ASSETS]]
+
+        # Price Movers (filter out None values)
+        valid_movers = [a for a in all_assets_data if a.get('price_change_pct_24h') is not None]
+        valid_movers.sort(key=lambda x: x['price_change_pct_24h'], reverse=True)
+        top_movers = [{"asset": a['asset'], "change_pct": a['price_change_pct_24h']} for a in valid_movers[:NUM_ASSETS]]
+        
+        # --- Structure Final Output ---
+        snapshot = {
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "funding_rates": {
+                "top_positive": top_funding,
+                "top_negative": bottom_funding
+            },
+            "open_interest": {
+                "top_by_usd_value": top_oi
+            },
+            "price_movers_24h": {
+                "top_positive_change": top_movers
+            }
+            # Can add more categories here later
+        }
+        
+        return snapshot
 
     except Exception as e:
-        print(f"An error occurred during the process: {e}")
-        # Attempt to clean up WebSocket connection if it exists
-        if info and info.ws_manager and info.ws_manager.ws:
-            try:
-                await info.stop_websocket()
-            except Exception as cleanup_e:
-                print(f"Error during WebSocket cleanup: {cleanup_e}")
-        sys.exit(1) # Exit with error code
-    finally:
-        # Ensure WebSocket is stopped cleanly if it was started
-        if info and info.ws_manager and info.ws_manager.is_running():
-            print("Stopping WebSocket connection...")
-            await info.stop_websocket()
-            print("WebSocket stopped.")
+        print(f"An error occurred: {e}")
+        # Optional: Raise the error again if you want the Action to fail clearly
+        # raise e 
+        return None # Return None on failure
 
+# --- Main execution block ---
 if __name__ == "__main__":
-    # Need to run the async main function
-    try:
-        asyncio.run(main())
-        print("Script finished successfully.")
-        sys.exit(0) # Ensure explicit success exit code
-    except SystemExit as e:
-         # Propagate specific exit codes from main()
-         sys.exit(e.code) 
-    except Exception as e:
-        print(f"Critical error running async main: {e}")
-        sys.exit(1) # General error exit code
+    snapshot_data = get_market_snapshot()
+
+    if snapshot_data:
+        print(f"Snapshot data generated successfully. Saving to {OUTPUT_FILENAME}...")
+        try:
+            # Ensure the directory exists (useful if running locally too)
+            os.makedirs(os.path.dirname(OUTPUT_FILENAME) or '.', exist_ok=True) 
+            
+            with open(OUTPUT_FILENAME, 'w') as f:
+                json.dump(snapshot_data, f, indent=2)
+            print(f"Snapshot saved to {OUTPUT_FILENAME}")
+            sys.exit(0) # Exit with success code
+        except Exception as e:
+            print(f"Error saving data to file: {e}")
+            sys.exit(1) # Exit with error code
+    else:
+        print("Failed to generate snapshot data.")
+        sys.exit(1) # Exit with error code
