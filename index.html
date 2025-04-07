@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://fonts.googleapis.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <!-- Removed Content-Security-Policy for now to simplify testing websockets, add back later if needed -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://fonts.googleapis.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' wss://api.hyperliquid.xyz;"> -->
     <title>PantherSwarm - Loading...</title>
-    <link rel="stylesheet" href="/PantherSwarm/style.css"> 
+    <link rel="stylesheet" href="/PantherSwarm/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -25,12 +26,14 @@
                      <a href="https://panther-ai.gitbook.io/pantherswarm/" target="_blank" rel="noopener noreferrer" class="button gitbook-button">GitBook</a>
                      <a href="https://discord.gg/ZdAuAjJTKg" target="_blank" rel="noopener noreferrer" class="button discord-button">Discord</a>
                      <a href="https://www.x.com/pantherswarm" target="_blank" rel="noopener noreferrer" class="button x-button">X</a>
+                     <!-- Added Market Data Button -->
+                     <a href="market-data.html" class="button market-data-button">Market Data</a>
                    </div>
                 </div>
             </section>
         </main>
         <footer> <p>Copyright © 2025 PantherSwarm - All Rights Reserved.</p> </footer>
     </div>
-    <script src="/PantherSwarm/matrix.js"></script> 
+    <script src="/PantherSwarm/matrix.js"></script>
 </body>
 </html>
