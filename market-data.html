@@ -4,125 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyperliquid Market Data - PantherSwarm</title>
-    <link rel="stylesheet" href="/PantherSwarm/style.css"> <!-- Link your existing CSS -->
-    <style>
-        body {
-            padding: 15px;
-            background-color: #121212; /* Darker background */
-            color: #e0e0e0; /* Light text */
-            font-family: 'Inter', sans-serif; /* Use font from index */
-        }
-        /* Main layout container */
-        .layout-container {
-            display: flex;
-            flex-wrap: wrap; /* Wrap on smaller screens */
-            gap: 20px; /* Space between columns */
-        }
-        /* Left column for controls and raw log */
-        .main-content {
-            flex: 2; /* Takes up more space */
-            min-width: 400px; /* Minimum width before wrapping */
-            display: flex;
-            flex-direction: column;
-        }
-        /* Right column for overview grids */
-        .overview-sidebar {
-            flex: 1; /* Takes less space */
-            min-width: 300px; /* Minimum width */
-            display: flex;
-            flex-direction: column;
-            gap: 15px; /* Space between grids */
-        }
-
-        /* Controls styling */
-        .controls {
-            background-color: #1e1e1e;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid #333;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-        }
-        .controls label { margin-right: 5px; color: #bbb; }
-        .controls input[type="text"] {
-            padding: 8px; border: 1px solid #444; background-color: #333;
-            color: #eee; border-radius: 4px;
-        }
-        .controls button {
-            padding: 8px 15px; background-color: #007bff; color: white;
-            border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s;
-        }
-        .controls button:hover { background-color: #0056b3; }
-
-        /* Raw Data Log styling */
-        #data-container {
-            background-color: #1a1a1a; color: #00dd00; /* Lighter green */
-            border: 1px solid #333; padding: 10px;
-            height: 600px; /* Increased height */
-            overflow-y: scroll; font-family: monospace;
-            white-space: pre-wrap; font-size: 0.85em; /* Slightly smaller */
-            flex-grow: 1; /* Allows it to fill space in flex column */
-            border-radius: 5px;
-        }
-        #data-container .message.hidden { display: none; }
-
-        /* Overview Grid styling */
-        .overview-grid {
-            background-color: #1e1e1e;
-            border: 1px solid #333;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .overview-grid h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #00aaff; /* Accent color */
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        }
-        .overview-grid ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: 0.9em;
-        }
-        .overview-grid li {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px solid #2a2a2a;
-        }
-        .overview-grid li:last-child { border-bottom: none; }
-        .overview-grid .coin { font-weight: bold; color: #eee; }
-        .overview-grid .value { color: #bbb; }
-        .overview-grid .value.positive { color: #28a745; } /* Green for positive */
-        .overview-grid .value.negative { color: #dc3545; } /* Red for negative */
-
-        /* Status styling */
-        .status {
-            font-weight: bold; margin-bottom: 10px; padding: 10px; border-radius: 4px;
-            text-align: center;
-        }
-        .status.connecting { background-color: #ffa500; color: black; }
-        .status.connected { background-color: #28a745; color: white; }
-        .status.error { background-color: #dc3545; color: white; }
-        .status.disconnected { background-color: #ffc107; color: black; }
-        .status.updating { background-color: #17a2b8; color: white; }
-
-        a.button-back {
-            display: inline-block; padding: 8px 15px; background-color: #007bff;
-            color: white; text-decoration: none; border-radius: 4px;
-            margin-bottom: 15px; /* Add space below */
-            align-self: flex-start; /* Align to left */
-        }
-        a.button-back:hover { background-color: #0056b3; }
-
-    </style>
+    <!-- Link the NEW style.css -->
+    <link rel="stylesheet" href="/PantherSwarm/style.css">
+    <!-- Link Google Fonts if needed (already in index.html, good practice here too) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body id="market-data-page"> <!-- Added ID for potential specific body styles -->
 
     <a href="index.html" class="button-back">Back to Home</a>
     <div id="status" class="status connecting">Connecting...</div>
@@ -143,8 +32,8 @@
                 </div>
             </div>
             <div id="data-container">
-                <!-- Live data log will appear here -->
-                <div style="text-align: center; padding-top: 20px; color: #888;">Waiting for specific coin data (e.g., L2 Book, Trades)...</div>
+                <!-- Formatted log messages will appear here -->
+                 <div class="message log-info" style="text-align: center; padding: 20px;">Connecting and waiting for data...</div>
             </div>
         </div>
 
@@ -152,19 +41,20 @@
         <div class="overview-sidebar">
             <div class="overview-grid" id="funding-positive-grid">
                 <h3>Top 5 Positive Funding</h3>
-                <ul id="funding-positive-list"><li>Loading...</li></ul>
+                <ul id="funding-positive-list"><li class="placeholder">Loading...</li></ul>
             </div>
             <div class="overview-grid" id="funding-negative-grid">
                 <h3>Top 5 Negative Funding</h3>
-                <ul id="funding-negative-list"><li>Loading...</li></ul>
+                <ul id="funding-negative-list"><li class="placeholder">Loading...</li></ul>
             </div>
              <div class="overview-grid" id="oi-grid">
-                <h3>Top 5 Open Interest (USD)</h3>
-                <ul id="oi-list"><li>Loading...</li></ul>
+                <!-- Title might be updated by JS -->
+                <h3>Top 5 Volume (OI Placeholder)</h3>
+                <ul id="oi-list"><li class="placeholder">Loading...</li></ul>
             </div>
             <div class="overview-grid" id="volume-grid">
                 <h3>Top 5 Volume (24h USD)</h3>
-                <ul id="volume-list"><li>Loading...</li></ul>
+                <ul id="volume-list"><li class="placeholder">Loading...</li></ul>
             </div>
         </div>
 
