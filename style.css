@@ -3,28 +3,30 @@
     --font-primary: 'Inter', sans-serif;
     --font-secondary: 'Roboto', sans-serif;
     /* Dark Theme Colors */
-    --color-background: #121212; /* Very Dark Grey/Off-black */
-    --color-background-secondary: #1a1a1a; /* Slightly lighter dark for footer */
-    --color-text: #e1e1e1; /* Light Grey base text */
-    --color-text-muted: #a0a0a0; /* Medium light grey */
-    --color-text-white: #ffffff; /* Pure white for headings/accents */
-    --color-border-light: rgba(255, 255, 255, 0.15); /* Subtle light border */
-    /* Accent Colors */
+    --color-background: #050505; /* Slightly darker black */
+    --color-background-secondary: #1a1a1a;
+    --color-text-white: #ffffff;
+    --color-border-light: rgba(71, 255, 71, 0.2); /* Subtle green border */
+    /* Matrix Green Palette */
+    --color-matrix-green-bright: #47FF47; /* Bright Matrix Green */
+    --color-matrix-green-dim: #2A9D8F; /* Dimmer, slightly teal green for readability */
+    --color-matrix-green-hover: #6FFF6F; /* Lighter green for hover */
+    /* Accent Colors (Keep Gold for contrast?) */
     --color-accent-gold: #D4AF37;
     --color-accent-gold-darker: #c8a030;
     --color-discord-blue: #5865F2;
     --color-discord-blue-darker: #4a54cf;
-    --color-x-black: #000000; /* Keep X button black */
+    --color-x-black: #000000;
     --color-x-black-darker: #222222;
     /* Overlay for BG Image */
-    --color-overlay-dark: rgba(18, 18, 18, 0.75); /* Match dark bg */
-    --color-overlay-darker: rgba(18, 18, 18, 0.85);
+    --color-overlay-dark: rgba(5, 5, 5, 0.78); /* Darker overlay */
+    --color-overlay-darker: rgba(5, 5, 5, 0.88);
     /* Other Variables */
-    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.2); /* Adjusted shadow for dark */
-    --text-shadow-darkbg: 1px 1px 3px rgba(0, 0, 0, 0.6);
-    --border-radius-medium: 8px; /* Slightly less rounded */
+    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.3); /* Slightly darker shadow */
+    --text-shadow-darkbg: 1px 1px 4px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
+    --border-radius-medium: 8px;
     --border-radius-pill: 50px;
-    /* Transition Speed for main content fade-in (if needed) */
+    /* Transition Speed */
     --content-fade-speed: 0.5s;
 }
 
@@ -35,110 +37,111 @@ html { font-size: 16px; }
 body {
     font-family: var(--font-secondary);
     line-height: 1.7;
-    background-color: var(--color-background); /* Dark background */
-    color: var(--color-text); /* Light text default */
+    background-color: var(--color-background);
+    color: var(--color-matrix-green-dim); /* Base text is dimmer green */
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden; /* Prevent scrollbars during loading */
+    overflow: hidden;
 }
 
 /* === Matrix Loader Styling === */
-/* Container for the matrix effect */
 #matrix-loading {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    z-index: 100;
-    opacity: 1;
-    visibility: visible;
-    /* Transition handled by matrix.js timeout now, but keep for potential direct style changes */
-     transition: opacity 2s ease-in-out, visibility 2s ease-in-out; /* Match JS fade time */
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #000; z-index: 100; opacity: 1; visibility: visible;
+    transition: opacity 2s ease-in-out, visibility 2s ease-in-out; /* Match JS fade time */
 }
-/* Canvas itself */
-#matrix-canvas {
-    display: block; /* Remove potential extra space */
-    width: 100%;
-    height: 100%;
-}
+#matrix-canvas { display: block; width: 100%; height: 100%; }
 
-/* === Main Website Content Styling (Initially Hidden) === */
+/* === Main Website Content Styling === */
 #website-content {
-    opacity: 0;
-    visibility: hidden;
+    opacity: 0; visibility: hidden;
     transition: opacity var(--content-fade-speed) ease-in, visibility var(--content-fade-speed) ease-in;
     min-height: 100vh;
 }
-/* Class added by matrix.js to show content */
 #website-content.visible {
-    opacity: 1;
-    visibility: visible;
-    /* Re-enable scrolling when content is shown */
-    overflow: auto; /* Allow scrolling on the content div */
-    display: flex; /* Use flex to structure internal main/footer */
-    flex-direction: column;
+    opacity: 1; visibility: visible; overflow: auto;
+    display: flex; flex-direction: column;
+}
+#website-content main { flex-grow: 1; width: 100%; }
+
+/* === Typography (Matrix Theme) === */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary); font-weight: 700; line-height: 1.3;
+    margin-bottom: 1rem; color: var(--color-text-white); /* Keep headings white */
+}
+h1 { font-size: clamp(2.8rem, 6vw, 3.8rem); letter-spacing: -0.5px; margin-bottom: 0.2rem; /* Reduced space before Kanji */ }
+
+/* Styling for the new Kanji Subtitle */
+.kanji-subtitle {
+    font-family: var(--font-primary); /* Or use 'monospace' if preferred */
+    font-size: clamp(1.5rem, 3vw, 1.8rem); /* Adjust size as needed */
+    color: var(--color-matrix-green-bright); /* Bright green */
+    margin-top: 0.1rem; /* Space below H1 */
+    margin-bottom: 1.8rem; /* Space before regular subtitle */
+    letter-spacing: 2px; /* Add some spacing */
+    font-weight: 600;
+    /* Inherits centering from p */
 }
 
-/* Apply width constraints to main content area */
-#website-content main {
-    flex-grow: 1;
-    width: 100%;
+p { margin-bottom: 1.5rem; max-width: 65ch; color: var(--color-matrix-green-dim); /* Dim green for paragraphs */ margin-left: auto; margin-right: auto; }
+
+.subtitle { /* Regular subtitle below Kanji */
+    font-family: var(--font-primary); font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+    font-weight: 400; margin-bottom: 2rem;
+    color: var(--color-matrix-green-dim); /* Dim green for subtitle too */
+    max-width: 65ch; margin-left: auto; margin-right: auto;
 }
+a { color: var(--color-accent-gold); text-decoration: none; transition: color 0.2s ease; } /* Keep gold links? */
+a:hover { color: var(--color-matrix-green-hover); text-decoration: none; } /* Hover changes to green */
 
-/* === Typography (Unchanged) === */
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-primary); font-weight: 700; line-height: 1.3; margin-bottom: 1rem; color: var(--color-text-white); }
-h1 { font-size: clamp(2.8rem, 6vw, 3.8rem); letter-spacing: -0.5px; }
-p { margin-bottom: 1.5rem; max-width: 65ch; color: var(--color-text); margin-left: auto; margin-right: auto; }
-.subtitle { font-family: var(--font-primary); font-size: clamp(1.1rem, 2.5vw, 1.3rem); font-weight: 400; margin-bottom: 2rem; color: var(--color-text-muted); max-width: 65ch; margin-left: auto; margin-right: auto; }
-a { color: var(--color-accent-gold); text-decoration: none; transition: color 0.2s ease; }
-a:hover { color: var(--color-accent-gold-darker); text-decoration: none; }
-
-/* === Hero Section (Full Viewport Dark - Applied within #website-content) === */
+/* === Hero Section (Matrix Theme) === */
 .hero {
     display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
     min-height: 100vh; width: 100%; padding: 4rem 1.5rem; position: relative; z-index: 0; overflow: hidden;
-    /* Background Image Settings - USING REPO NAME PATH FOR IMAGE */
     background-image:
         linear-gradient(var(--color-overlay-dark), var(--color-overlay-darker)),
-        url('/PantherSwarm/panther2.png'); /* <<< UPDATED PATH */
+        url('/PantherSwarm/panther2.png');
     background-size: cover; background-position: center center; background-repeat: no-repeat;
 }
 .hero-content { flex: 0 0 auto; width: 100%; max-width: 850px; z-index: 2; text-shadow: var(--text-shadow-darkbg); }
 .hero .hero-content h1 { color: var(--color-text-white); background: none; -webkit-background-clip: unset; background-clip: unset; -webkit-text-fill-color: unset; }
-.hero .hero-content p { color: var(--color-text); }
-.hero .hero-content .subtitle { color: var(--color-text-muted); }
+/* Paragraph/Subtitle colors are set above */
 
-/* === Buttons (Unchanged styling) === */
+/* === Buttons (Consider color adjustments) === */
 .hero-buttons { margin-top: 2.5rem; }
 .button { display: inline-block; padding: 0.9rem 2.2rem; margin: 0.6rem 0.8rem 0.6rem 0; border-radius: var(--border-radius-pill); font-family: var(--font-primary); font-weight: 600; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.7px; text-align: center; text-decoration: none; cursor: pointer; border: 2px solid transparent; transition: all 0.25s ease-in-out; line-height: 1.5; }
 .button:hover, .button:focus { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-hover); text-decoration: none; outline: none; }
 .button:active { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
+
+/* Option 1: Keep Gold Waitlist Button for Contrast */
 .waitlist-button { background-color: var(--color-accent-gold); color: #111; border-color: var(--color-accent-gold); }
 .waitlist-button:hover, .waitlist-button:focus { background-color: var(--color-accent-gold-darker); border-color: var(--color-accent-gold-darker); color: #111; }
-.gitbook-button { background-color: rgba(255, 255, 255, 0.05); color: var(--color-text-light); border-color: var(--color-border-light); }
-.gitbook-button:hover, .gitbook-button:focus { background-color: rgba(255, 255, 255, 0.1); color: var(--color-text-white); border-color: rgba(255, 255, 255, 0.4); }
+
+/* Option 2: Make Waitlist Button Matrix Green (Uncomment to use) */
+/*
+.waitlist-button { background-color: var(--color-matrix-green-bright); color: #000; border-color: var(--color-matrix-green-bright); text-shadow: none;}
+.waitlist-button:hover, .waitlist-button:focus { background-color: var(--color-matrix-green-hover); border-color: var(--color-matrix-green-hover); color: #000; }
+*/
+
+.gitbook-button { background-color: rgba(71, 255, 71, 0.08); /* Subtle green bg */ color: var(--color-matrix-green-dim); border-color: var(--color-border-light); }
+.gitbook-button:hover, .gitbook-button:focus { background-color: rgba(71, 255, 71, 0.15); color: var(--color-matrix-green-bright); border-color: rgba(71, 255, 71, 0.5); }
+
 .discord-button { background-color: var(--color-discord-blue); color: var(--color-text-white); border-color: var(--color-discord-blue); }
 .discord-button:hover, .discord-button:focus { background-color: var(--color-discord-blue-darker); border-color: var(--color-discord-blue-darker); color: var(--color-text-white); }
+
 .x-button { background-color: var(--color-x-black); color: var(--color-text-white); border-color: var(--color-x-black); }
 .x-button:hover, .x-button:focus { background-color: var(--color-x-black-darker); border-color: var(--color-x-black-darker); color: var(--color-text-white); }
 
-/* === Footer (Applied within #website-content) === */
+
+/* === Footer === */
 #website-content footer {
-     text-align: center;
-     padding: 1.5rem 1rem;
-     background-color: var(--color-background-secondary);
-     color: var(--color-text-muted);
-     font-size: 0.85rem;
-     width: 100%;
-     margin-top: auto; /* Ensure footer is pushed down */
+     text-align: center; padding: 1.5rem 1rem; background-color: var(--color-background-secondary);
+     color: var(--color-text-muted); font-size: 0.85rem; width: 100%; margin-top: auto;
  }
 
-/* === Animations (Removed previous stagger, relies on JS/CSS transition) === */
-/* You can add entrance animations back here if desired, targeting elements inside #website-content.visible .hero-content */
+/* === Animations (Removed stagger, relies on main content fade) === */
 
 /* === Responsive Adjustments (Unchanged) === */
-@media (max-width: 768px) { h1 { font-size: clamp(2.5rem, 7vw, 3.2rem); } .hero { padding: 3rem 1rem; min-height: 95vh; } .hero-content { max-width: 95%; } p, .subtitle { max-width: 90%; } }
-@media (max-width: 576px) { html { font-size: 15px; } .hero { padding: 2.5rem 1rem; min-height: 90vh;} .button { display: block; width: 90%; max-width: 320px; margin: 1rem auto; padding: 1rem 1.5rem; } h1 { font-size: clamp(2.2rem, 8vw, 2.8rem); } .subtitle { font-size: 1rem; } p, .subtitle { max-width: 95%; } }
+@media (max-width: 768px) { h1 { font-size: clamp(2.5rem, 7vw, 3.2rem); } .hero { padding: 3rem 1rem; min-height: 95vh; } .hero-content { max-width: 95%; } p, .subtitle, .kanji-subtitle { max-width: 90%; } }
+@media (max-width: 576px) { html { font-size: 15px; } .hero { padding: 2.5rem 1rem; min-height: 90vh;} .button { display: block; width: 90%; max-width: 320px; margin: 1rem auto; padding: 1rem 1.5rem; } h1 { font-size: clamp(2.2rem, 8vw, 2.8rem); } .subtitle { font-size: 1rem; } p, .subtitle, .kanji-subtitle { max-width: 95%; } }
