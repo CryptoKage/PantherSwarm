@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                      console.log("Matrix animation stopped.");
                 }
             }, 2000); // Corresponds to the 2s fade-out transition
-        }, 5000); // Initial delay before starting fade-out
+        }, 2500); // Initial delay before starting fade-out
     } else {
         console.error("Matrix Error: Could not find #matrix-loading or #website-content for transition.");
         // Fallback if elements are missing
