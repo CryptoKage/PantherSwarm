@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Removed Content-Security-Policy for now to simplify testing websockets, add back later if needed -->
-    <title>PantherSwarm - Loading...</title> <!-- Title updated by JS later -->
+    <title>PantherSwarm - Loading...</title> <!-- Updated by JS -->
+    <!-- Ensure this path is correct for your project structure -->
     <link rel="stylesheet" href="/PantherSwarm/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="matrix-loading"> <canvas id="matrix-canvas"></canvas> </div>
+    <!-- Matrix Canvas container: Stays visible, goes behind content -->
+    <div id="matrix-loading">
+        <canvas id="matrix-canvas"></canvas>
+    </div>
+
+    <!-- Website Content: Starts hidden, fades in on top -->
     <div id="website-content" class="hidden">
         <main>
             <section class="hero">
@@ -21,20 +26,21 @@
                    <!-- Updated Subtitle -->
                    <p class="subtitle">Your Accessible Suite of AI-Enhanced Trading Tools, Optimized for Hyperliquid.</p>
                    <!-- Updated Description -->
-                   <p>PantherSwarm provides an accessible suite of tools including real-time data feeds (Cub), automated strategy scanners (Truffle Hog) and AI-powered analysis (Panther AI) – designed to simplify your trading workflow. Join our Discord and waitlist for early access.</p>
+                   <p>PantherSwarm provides an accessible suite of tools including real-time data feeds (Cub), automated strategy scanners (Truffle Hog) and AI-powered market analysis (Panther AI) designed to simplify your trading workflow. Join our Discord and waitlist for early access.</p>
                    <div class="hero-buttons">
                      <a href="https://docs.google.com/forms/d/e/1FAIpQLScwDQHh1JTAqIx517zHr93KSR9iAIho9jzap37vXxEH3irLCg/viewform" target="_blank" rel="noopener noreferrer" class="button waitlist-button">Waitlist</a>
                      <a href="https://panther-ai.gitbook.io/pantherswarm/" target="_blank" rel="noopener noreferrer" class="button gitbook-button">GitBook</a>
                      <a href="https://discord.gg/ZdAuAjJTKg" target="_blank" rel="noopener noreferrer" class="button discord-button">Discord</a>
                      <a href="https://www.x.com/pantherswarm" target="_blank" rel="noopener noreferrer" class="button x-button">X</a>
-                     <!-- Removed Market Data Button -->
-                     <!-- <a href="market-data.html" class="button market-data-button">Market Data</a> -->
+                     <!-- Market Data Button Removed -->
                    </div>
                 </div>
             </section>
         </main>
         <footer> <p>Copyright © 2025 PantherSwarm - All Rights Reserved.</p> </footer>
     </div>
+
+    <!-- Ensure this path is correct for your project structure -->
     <script src="/PantherSwarm/matrix.js"></script>
 </body>
 </html>
