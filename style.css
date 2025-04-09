@@ -1,41 +1,159 @@
-/* --- Matrix Animation Canvas --- */
-#matrix-loading {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: transparent; /* Make background transparent, body color shows through */
-    z-index: -1; /* Send it behind other content */
-    opacity: 1; /* Start fully visible for load */
-    visibility: visible;
-    /* Transition for fade-out effect during loading */
-    transition: opacity 0.5s ease-in-out;
-    /* --- NEW: Default subtle opacity for background state --- */
-    /* opacity: 0.1; /* Set a low default opacity for the background state */
-}
-
-/* Make sure website content is layered above */
-#website-content {
-    position: relative; /* Needed for z-index stacking */
-    z-index: 1; /* Ensure it's above the canvas */
-    background-color: #050505; /* Give it the solid background color */
-    padding: 20px;
-    opacity: 0; /* Start hidden for fade-in */
-    transition: opacity 0.5s ease-in; /* CSS transition for fade-in */
-}
-#website-content.visible { /* Add this class via JS when showing */
-    opacity: 1;
-}
-
-/* Existing .hidden class */
-.hidden {
-    display: none;
-}
-
-/* Adjust body if needed - ensure it doesn't overflow unexpectedly */
+/* --- Global Resets & Defaults --- */
 body {
-    background-color: #050505; /* Ensure body has the base color */
-    color: #cccccc;
+    background-color: #050505; /* Base background, visible behind canvas fade */
+    color: #cccccc; /* Light grey default text */
     font-family: 'Inter', 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.6;
-    /* overflow: hidden; /* Potentially keep hidden until content loads */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    /* Overflow-y managed by JS */
+    overflow-y: hidden; /* Start with scroll disabled */
 }
+
+h1, h2, h3, h4, h5, h6 {
+    color: #33A1FF; /* Tech Blue for headings */
+    font-family: 'Courier New', Courier, monospace;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+a {
+    color: #66ccff; /* Lighter blue for links */
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: #99ddff; /* Brighten link on hover */
+}
+
+/* --- Button Styling (Consistent) --- */
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: 1px solid #33A1FF;
+    border-radius: 4px;
+    background-color: rgba(51, 161, 255, 0.1);
+    color: #33A1FF;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.button:hover {
+    background-color: rgba(51, 161, 255, 0.3);
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(51, 161, 255, 0.5);
+}
+
+/* --- Matrix Animation Canvas --- */
+#matrix-loading {
+    position: fixed; /* Keep fixed to cover viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000; /* Initial black background for loading */
+    z-index: 10; /* High z-index during load */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-in-out; /* Transition for opacity */
+    pointer-events: none; /* Allow clicks to pass through */
+}
+#matrix-loading.background-mode { /* Class added by JS after load */
+     background-color: transparent; /* Make background transparent */
+     z-index: -1; /* Send behind content */
+     /* Opacity will be controlled directly via JS style manipulation */
+}
+
+#matrix-canvas {
+    display: block; /* Prevent extra space */
+    width: 100%;
+    height: 100%;
+}
+
+/* --- Website Content --- */
+#website-content {
+    position: relative; /* Needed for z-index stacking */
+    z-index: 1; /* Ensure it's above the background canvas */
+    background-color: #050505; /* Solid background color to overlay canvas */
+    padding: 20px;
+    opacity: 0; /* Start hidden for fade-in */
+    visibility: hidden; /* Start hidden */
+    transition: opacity 0.5s ease-in, visibility 0s linear 0.5s; /* Fade opacity, then make visible */
+    min-height: 100vh; /* Ensure content area can fill viewport */
+    box-sizing: border-box; /* Include padding in height/width */
+}
+#website-content.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-in; /* Only transition opacity on fade in */
+}
+
+.hidden { /* Only used initially */
+   display: none;
+}
+
+/* --- Index Page Specific Content Styling --- */
+.hero {
+    text-align: center;
+    padding: 60px 20px 40px 20px; /* More top padding */
+    display: flex; /* Center content vertically */
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100vh - 120px); /* Adjust based on footer/padding */
+}
+
+.hero-content {
+     max-width: 700px; /* Limit width */
+     margin: 0 auto; /* Center horizontally */
+}
+
+.hero h1 {
+    font-size: 3em;
+    margin-bottom: 0.1em;
+    color: #33A1FF;
+    text-shadow: 0 0 5px rgba(51, 161, 255, 0.5);
+}
+
+.kanji-subtitle, .subtitle {
+    font-family: 'Courier New', Courier, monospace;
+    color: #aaaaaa;
+    margin-bottom: 1em;
+}
+.kanji-subtitle { font-size: 1.5em; }
+.subtitle { font-size: 1.1em; color: #cccccc; } /* Make main subtitle slightly brighter */
+
+.hero p {
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    color: #bbbbbb; /* Ensure paragraph text color */
+    font-size: 1rem;
+}
+
+.hero-buttons { margin-top: 30px; }
+
+/* --- Footer --- */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    font-size: 0.8em;
+    color: #444;
+    border-top: 1px solid #222;
+    position: relative; /* Ensure it's above background canvas */
+    z-index: 1;
+    background-color: #050505; /* Match content background */
+}
+
+/* --- Styles for Market Data Page (If you reuse this CSS) --- */
+/* Add placeholder styles if needed, or remove if market-data page is gone */
+/* ... (Keep your previous market data styles here if that page might return) ... */
